@@ -548,7 +548,10 @@
                     <div id="statusDot" class="status-dot"></div>
                     <span id="statusText">Idle</span>
                 </div>
-                <a href="/api/download" id="downloadBtn" class="btn btn-success" style="padding: 8px 18px; font-size: 13px; width: auto; display: none;">Export Result Excel</a>
+                <div id="downloadGroup" style="display: flex; gap: 8px;">
+                    <a href="/api/download?format=xlsx" id="downloadXlsxBtn" class="btn btn-success" style="padding: 8px 14px; font-size: 13px; width: auto; background: #10b981; text-decoration: none;">Export Excel (.xlsx)</a>
+                    <a href="/api/download?format=csv" id="downloadCsvBtn" class="btn btn-primary" style="padding: 8px 14px; font-size: 13px; width: auto; background: #3b82f6; text-decoration: none;">Export CSV (.csv)</a>
+                </div>
             </div>
         </div>
 
@@ -597,6 +600,7 @@
                             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
                                 <button id="flightBtn" class="btn btn-primary" style="background: #3b82f6; box-shadow: 0 4px 14px rgba(59,130,246,0.2);">Run 1: Extract Flights Only</button>
                                 <button id="signupBtn" class="btn btn-primary" style="background: #10b981; box-shadow: 0 4px 14px rgba(16,185,129,0.2);">Run 2: Register Memberships</button>
+                                <button id="claimBtn" class="btn btn-primary" style="background: #f59e0b; box-shadow: 0 4px 14px rgba(245,158,11,0.2);">Run 3: Claim Miles Only</button>
                                 <button id="startBtn" class="btn btn-primary" style="background: #6366f1; box-shadow: 0 4px 14px rgba(99,102,241,0.2);">Run All (End-to-End)</button>
                             </div>
                             
@@ -742,9 +746,10 @@
         const startBtn = document.getElementById('startBtn');
         const flightBtn = document.getElementById('flightBtn');
         const signupBtn = document.getElementById('signupBtn');
+        const claimBtn = document.getElementById('claimBtn');
         const statusText = document.getElementById('statusText');
         const statusDot = document.getElementById('statusDot');
-        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadGroup = document.getElementById('downloadGroup');
         const fileInput = document.getElementById('fileInput');
         const uploadStatus = document.getElementById('uploadStatus');
         const activeProfileCard = document.getElementById('activeProfileCard');
@@ -785,6 +790,7 @@
                 startBtn.disabled = true;
                 flightBtn.disabled = true;
                 signupBtn.disabled = true;
+                claimBtn.disabled = true;
                 startBtn.innerText = 'Automation Flow Running...';
                 activeProfileCard.style.display = 'flex';
             } else {
@@ -792,6 +798,7 @@
                 startBtn.disabled = false;
                 flightBtn.disabled = false;
                 signupBtn.disabled = false;
+                claimBtn.disabled = false;
                 startBtn.innerText = 'Run All (End-to-End)';
                 activeProfileCard.style.display = 'none';
             }
@@ -815,10 +822,8 @@
                 }
             }
 
-            if (status.processed > 0 || status.status === 'Completed') {
-                downloadBtn.style.display = 'inline-block';
-            } else {
-                downloadBtn.style.display = 'none';
+            if (downloadGroup) {
+                downloadGroup.style.display = 'flex';
             }
         }
 
@@ -998,6 +1003,7 @@
         startBtn.addEventListener('click', () => startFlow('all'));
         flightBtn.addEventListener('click', () => startFlow('flight_only'));
         signupBtn.addEventListener('click', () => startFlow('signup_only'));
+        claimBtn.addEventListener('click', () => startFlow('claim_only'));
 
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];

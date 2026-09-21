@@ -106,8 +106,15 @@ def upload_file():
 
 @app.route("/api/download", methods=["GET"])
 def download_processed_file():
-    if os.path.exists(OUTPUT_EXCEL_PATH):
+    fmt = request.args.get("format", "xlsx").lower()
+    csv_path = os.path.splitext(OUTPUT_EXCEL_PATH)[0] + ".csv"
+    
+    if fmt == "csv" and os.path.exists(csv_path):
+        return send_file(csv_path, as_attachment=True, download_name=os.path.basename(csv_path))
+    elif os.path.exists(OUTPUT_EXCEL_PATH):
         return send_file(OUTPUT_EXCEL_PATH, as_attachment=True, download_name=os.path.basename(OUTPUT_EXCEL_PATH))
+    elif os.path.exists(csv_path):
+        return send_file(csv_path, as_attachment=True, download_name=os.path.basename(csv_path))
     return jsonify({"status": "error", "message": "Processed file not found. Run automation first."}), 404
 
 if __name__ == "__main__":

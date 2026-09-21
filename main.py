@@ -45,13 +45,12 @@ def run_automation(mode="all"):
     logger.info(f"Starting Airline Passenger Automation process in mode: {mode}...")
     
     # 1. Load Excel Data
-    logger.info(f"Loading input file: {INPUT_EXCEL_PATH}")
+    target_path = OUTPUT_EXCEL_PATH if (mode == "claim_only" and os.path.exists(OUTPUT_EXCEL_PATH)) else INPUT_EXCEL_PATH
+    logger.info(f"Loading input file: {target_path}")
     try:
-        df = read_excel_data(INPUT_EXCEL_PATH)
-        # Limit processing queue to 4 passengers for test execution
-        df = df.head(4)
+        df = read_excel_data(target_path)
     except Exception as e:
-        logger.error(f"Failed to read input excel file: {e}")
+        logger.error(f"Failed to read excel file {target_path}: {e}")
         sys.exit(1)
 
     # Print columns to aid debugging
@@ -96,11 +95,13 @@ def run_automation(mode="all"):
     
     try:
         # Start browsers once before entering the loop to ensure high-performance reuse
-        if mode != "signup_only":
+        if mode != "signup_only" and mode != "claim_only":
             logger.info("Initializing Etihad Scraper browser session...")
             etihad.start()
         
         for index, row in df.iterrows():
+            if mode == "claim_only" or mode == "signup_only":
+                break
             pnr = str(row[pnr_col]).strip()
             last_name = str(row[lastname_col]).strip()
             
@@ -162,27 +163,44 @@ def run_automation(mode="all"):
                 # Auto-save changes
                 save_excel_data(df, OUTPUT_EXCEL_PATH)
                 
-        logger.info("Stopping Etihad Scraper browser session...")
-        etihad.stop()
+        if mode != "signup_only" and mode != "claim_only":
+            logger.info("Stopping Etihad Scraper browser session...")
+            etihad.stop()
             
-        # Stage 2: Saudia Signup Loop
+        # Stage 2: Saudia Signup / Claim Loop
         if mode != "flight_only":
-            logger.info("Initializing Saudia Signup browser session...")
+            logger.info("Initializing Saudia browser session...")
             saudia.start()
             
+            # Determine processing subset
+            items_to_process = []
             for index, row in df.iterrows():
                 pnr = str(row[pnr_col]).strip()
                 last_name = str(row[lastname_col]).strip()
-                
-                # Skip empty entries
                 if not pnr or pnr == "nan" or not last_name or last_name == "nan":
                     continue
-                    
-                # If already processed or failed at login, skip
-                if str(row.get("Saudia Membership ID", "")).strip() not in ["", "nan"]:
-                    continue
-                if df.at[index, "Status"] in ["Etihad Login Failed", "Skipped (FF Present)"]:
-                    continue
+                items_to_process.append((index, row, pnr, last_name))
+                
+            logger.info(f"Loaded records count for processing: {len(items_to_process)}")
+            if mode == "claim_only":
+                # User requested: process only a single passenger for claim test
+                active_claims = []
+                for index, row, pnr, last_name in items_to_process:
+                    saudia_id = str(row.get("Saudia Membership ID", "")).strip()
+                    status = str(row.get("Status", "")).strip()
+                    logger.info(f"Checking claim candidate: PNR {pnr} | Saudia ID: {saudia_id} | Status: {status}")
+                    if saudia_id and saudia_id != "nan" and "Claimed" not in status:
+                        active_claims.append((index, row, pnr, last_name))
+                        break
+                items_to_process = active_claims
+                
+            for index, row, pnr, last_name in items_to_process:
+                # If doing normal signup and already processed or failed at login, skip
+                if mode != "claim_only":
+                    if str(row.get("Saudia Membership ID", "")).strip() not in ["", "nan"]:
+                        continue
+                    if df.at[index, "Status"] in ["Etihad Login Failed", "Skipped (FF Present)"]:
+                        continue
 
                 logger.info(f"--- Saudia Stage: Processing Passenger {index + 1}/{len(df)}: PNR {pnr}, Last Name: {last_name} ---")
                 
@@ -195,6 +213,23 @@ def run_automation(mode="all"):
                     "passenger_name": extracted_name,
                     "flight_number": str(row.get("Flight Details", "Unknown"))
                 }
+
+                if mode == "claim_only":
+                    # Run claim miles workflow
+                    claim_success = saudia.claim_miles(passenger_details)
+                    if claim_success:
+                        df.at[index, "Status"] = "Miles Claimed"
+                        df.at[index, "Remarks"] = "Claim submitted successfully"
+                        success_count += 1
+                    else:
+                        df.at[index, "Status"] = "Claim Failed"
+                        df.at[index, "Remarks"] = "Failed to autofill/submit claim"
+                        failed_count += 1
+                    
+                    processed_count += 1
+                    write_status("Running", processed_count, total_count, success_count, failed_count, skipped_count, pnr, last_name)
+                    save_excel_data(df, OUTPUT_EXCEL_PATH)
+                    continue
 
                 # Step C: Initialize Temp Mail
                 temp_mail = TempMailClient()
@@ -215,23 +250,27 @@ def run_automation(mode="all"):
                 else:
                     logger.info("Passenger details already extracted from Etihad UI. Skipping email wait to run at maximum speed.")
 
-                # Step G: Register on Saudia with a dot-aliased or standard temp email
-                unique_email = generate_gmail_alias(temp_email, index)
-                password = "TempPassword123!"
+                # Step G: Register on Saudia with standard temp email
+                unique_email = temp_email
+                password = "TempPass123!"
                 
                 signup_status = saudia.create_membership(passenger_details, unique_email, password)
                 
                 if signup_status == "SUCCESS_PENDING_ACTIVATION":
                     # Step H: Locate the Alfursan activation email
                     logger.info(f"Saudia signup submitted. Waiting for activation email for {unique_email}...")
-                    activation_email = temp_mail.wait_for_email_matching(keyword="Alfursan", timeout_seconds=120)
+                    activation_email = temp_mail.wait_for_email_matching(keyword="Activation", timeout_seconds=120)
                     
                     if activation_email:
                         # Find activation link
                         import re
                         email_body = activation_email.get("textBody", "") + activation_email.get("htmlBody", "")
                         urls = re.findall(r'https?://[^\s<>"]+|www\.[^\s<>"]+', email_body)
-                        activation_url = next((u for u in urls if "activate" in u.lower() or "verification" in u.lower() or "saudia" in u.lower()), None)
+                        # Filter out images and static assets
+                        clean_urls = [u for u in urls if not any(ext in u.lower() for ext in ['.png', '.jpg', '.jpeg', '.gif', '.css', '.ashx'])]
+                        activation_url = next((u for u in clean_urls if "activate" in u.lower() or "verification" in u.lower() or "verify" in u.lower()), None)
+                        if not activation_url:
+                            activation_url = next((u for u in clean_urls if "saudia" in u.lower()), None)
                         
                         if activation_url:
                             logger.info(f"Activation URL found: {activation_url}. Clicking activation link...")
@@ -246,11 +285,31 @@ def run_automation(mode="all"):
                             welcome_email = temp_mail.wait_for_email_matching(keyword="Welcome", timeout_seconds=120)
                             
                             if welcome_email:
-                                welcome_body = welcome_email.get("textBody", "") + welcome_email.get("htmlBody", "")
-                                member_match = re.search(r'\b\d{8,12}\b', welcome_body)
+                                raw_html = welcome_email.get("htmlBody", "")
+                                text_body = welcome_email.get("textBody", "")
+                                clean_text = text_body
+                                if raw_html:
+                                    try:
+                                        from bs4 import BeautifulSoup
+                                        soup = BeautifulSoup(raw_html, "html.parser")
+                                        for s in soup(["style", "script"]):
+                                            s.decompose()
+                                        clean_text += " " + soup.get_text(separator=" ")
+                                    except Exception:
+                                        clean_html = re.sub(r'<style.*?</style>', '', raw_html, flags=re.DOTALL | re.IGNORECASE)
+                                        clean_html = re.sub(r'<script.*?</script>', '', clean_html, flags=re.DOTALL | re.IGNORECASE)
+                                        clean_text += " " + re.sub(r'<[^>]+>', ' ', clean_html)
+                                
+                                # First prioritize Saudia 100-prefix format (e.g. 100xxxxxxx)
+                                member_match = re.search(r'\b(100\d{5,9})\b', clean_text)
+                                if not member_match:
+                                    # Next look for explicit labels (Membership No / Alfursan ID: xxxxxxxx)
+                                    member_match = re.search(r'(?:Membership|AlFursan|Member)\s*(?:ID|No|Number|#)?\s*[:#-]?\s*(\d{8,12})', clean_text, re.IGNORECASE)
+                                if not member_match:
+                                    member_match = re.search(r'\b\d{8,12}\b', clean_text)
                                 
                                 if member_match:
-                                    membership_id = member_match.group(0)
+                                    membership_id = member_match.group(1) if member_match.lastindex else member_match.group(0)
                                     logger.info(f"Membership successfully created! ID: {membership_id}")
                                     df.at[index, "Saudia Membership ID"] = membership_id
                                     df.at[index, "Status"] = "Activated"

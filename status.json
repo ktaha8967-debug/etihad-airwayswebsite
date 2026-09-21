@@ -1,11 +1,11 @@
 {
-    "status": "Running",
+    "status": "Completed",
     "processed": 1,
-    "total": 4,
+    "total": 214,
     "success": 0,
-    "failed": 0,
-    "skipped": 1,
-    "current_pnr": "DSSP38",
-    "current_name": "JUDES",
-    "last_updated": "2026-08-13 00:08:35"
+    "failed": 1,
+    "skipped": 0,
+    "current_pnr": "",
+    "current_name": "",
+    "last_updated": "2026-08-16 14:11:38"
 }

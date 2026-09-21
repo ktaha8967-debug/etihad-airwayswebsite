@@ -42,13 +42,6 @@ class EtihadScraper:
             pass
         finally:
             self.browser = None
-
-        try:
-            if self.playwright:
-                self.playwright.stop()
-        except Exception:
-            pass
-        finally:
             self.playwright = None
         logger.info("Etihad Scraper stopped.")
 

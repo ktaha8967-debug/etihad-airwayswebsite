@@ -43,37 +43,37 @@ def read_excel_data(file_path: str) -> pd.DataFrame:
         raise
 
 def save_excel_data(df: pd.DataFrame, file_path: str):
-    """Saves the DataFrame back to Excel."""
+    """Saves the DataFrame back to Excel and CSV."""
     try:
-        df.to_excel(file_path, index=False)
-        logging.info(f"Successfully saved data to {file_path}")
+        # Clean unnamed/nan columns if any
+        clean_df = df.loc[:, ~df.columns.astype(str).str.contains('^Unnamed|^nan', case=False, na=False)].copy()
+        clean_df.to_excel(file_path, index=False)
+        
+        # Also auto-export CSV
+        csv_path = os.path.splitext(file_path)[0] + ".csv"
+        clean_df.to_csv(csv_path, index=False)
+        logging.info(f"Successfully saved data to {file_path} and {csv_path}")
     except Exception as e:
-        logging.error(f"Error saving excel file {file_path}: {e}")
+        logging.error(f"Error saving file {file_path}: {e}")
         raise
 
 def generate_random_passport() -> str:
-    """Generates a random passport number format (1 letter + 7 digits)."""
+    """Generates a random passport number format (2 letters + 7 digits)."""
     import random
     import string
-    letter = random.choice(string.ascii_uppercase)
+    letters = "".join(random.choices(string.ascii_uppercase, k=2))
     digits = "".join(random.choices(string.digits, k=7))
-    return f"{letter}{digits}"
+    return f"{letters}{digits}"
 
 def generate_random_dob() -> str:
-    """Generates a random date of birth (DD/MM/YYYY) for adults aged 22-55."""
-    import random
-    from datetime import datetime, timedelta
-    start_date = datetime.now() - timedelta(days=55*365)
-    end_date = datetime.now() - timedelta(days=22*365)
-    random_days = random.randint(0, (end_date - start_date).days)
-    dob = start_date + timedelta(days=random_days)
-    return dob.strftime("%d/%m/%Y")
+    """Generates a fixed valid adult date of birth (DD/MM/YYYY) to ensure strict form validation passes."""
+    return "12/04/1990"
 
 def generate_random_mobile() -> str:
-    """Generates a random 10-digit mobile number starting with 9, 8 or 7."""
+    """Generates a random 9-digit mobile number starting with 6 or 7 (valid French mobile)."""
     import random
-    prefix = random.choice(["7", "8", "9"])
-    digits = "".join(random.choices(string.digits if 'string' in globals() else "0123456789", k=9))
+    prefix = random.choice(["6", "7"])
+    digits = "".join(random.choices("0123456789", k=8))
     return f"{prefix}{digits}"
 
 def generate_gmail_alias(base_email: str, index: int) -> str:
