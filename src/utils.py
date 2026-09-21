@@ -2,16 +2,23 @@ import os
 import logging
 import pandas as pd
 
+from src.config import LOG_FILE_PATH
+
 def setup_logging():
     """Sets up standard logging configuration."""
+    handlers = [logging.StreamHandler()]
+    try:
+        handlers.append(logging.FileHandler(LOG_FILE_PATH, encoding="utf-8"))
+    except Exception:
+        pass
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler("automation.log", encoding="utf-8")
-        ]
+        handlers=handlers,
+        force=True
     )
+
 
 def read_excel_data(file_path: str) -> pd.DataFrame:
     """Reads input Excel booking data and returns a cleaned DataFrame."""

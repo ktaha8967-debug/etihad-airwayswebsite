@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: etihad-airways-automation
+    env: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: HEADLESS
+        value: "True"

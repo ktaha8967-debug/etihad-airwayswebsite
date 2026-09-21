@@ -9,3 +9,5 @@ flask>=3.0.0
 python-docx>=1.0.0
 playwright-stealth>=2.0.0
 nest-asyncio>=1.6.0
+gunicorn>=21.2.0
+

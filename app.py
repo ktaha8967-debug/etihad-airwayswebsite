@@ -5,10 +5,10 @@ import logging
 from flask import Flask, render_template, jsonify, request, send_file
 from werkzeug.utils import secure_filename
 from main import run_automation, write_status
-from src.config import INPUT_EXCEL_PATH, OUTPUT_EXCEL_PATH
+from src.config import INPUT_EXCEL_PATH, OUTPUT_EXCEL_PATH, STATUS_FILE_PATH, LOG_FILE_PATH, BASE_DIR
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = '.'
+app.config['UPLOAD_FOLDER'] = BASE_DIR
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -19,13 +19,14 @@ automation_thread = None
 automation_lock = threading.Lock()
 
 def check_status_file():
-    if not os.path.exists("status.json"):
+    if not os.path.exists(STATUS_FILE_PATH):
         write_status("Idle", 0, 0, 0, 0, 0)
     try:
-        with open("status.json", "r") as f:
+        with open(STATUS_FILE_PATH, "r") as f:
             return json.load(f)
     except Exception:
         return {"status": "Idle", "processed": 0, "total": 0, "success": 0, "failed": 0, "skipped": 0}
+
 
 @app.route("/")
 def index():
@@ -74,11 +75,10 @@ def start_automation():
 
 @app.route("/api/logs", methods=["GET"])
 def get_logs():
-    log_file = "automation.log"
-    if not os.path.exists(log_file):
+    if not os.path.exists(LOG_FILE_PATH):
         return jsonify({"logs": "Log file not found yet."})
     try:
-        with open(log_file, "r", encoding="utf-8", errors="ignore") as f:
+        with open(LOG_FILE_PATH, "r", encoding="utf-8", errors="ignore") as f:
             lines = f.readlines()
             # Return last 50 lines
             return jsonify({"logs": "".join(lines[-50:])})
@@ -117,6 +117,10 @@ def download_processed_file():
         return send_file(csv_path, as_attachment=True, download_name=os.path.basename(csv_path))
     return jsonify({"status": "error", "message": "Processed file not found. Run automation first."}), 404
 
+# Expose WSGI handler for Vercel/Render/Gunicorn
+wsgi_app = app
+
 if __name__ == "__main__":
-    # Serve locally on port 5000
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
+

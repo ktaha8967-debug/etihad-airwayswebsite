@@ -14,7 +14,7 @@ from src.utils import setup_logging, read_excel_data, save_excel_data
 from src.etihad_scraper import EtihadScraper
 from src.saudia_signup import SaudiaSignupManager
 from src.temp_mail import TempMailClient
-from src.config import INPUT_EXCEL_PATH, OUTPUT_EXCEL_PATH
+from src.config import INPUT_EXCEL_PATH, OUTPUT_EXCEL_PATH, STATUS_FILE_PATH
 
 # Set up logging first
 setup_logging()
@@ -36,10 +36,11 @@ def write_status(status_str, processed, total, success, failed, skipped, current
             "current_name": current_name,
             "last_updated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        with open("status.json", "w") as f:
+        with open(STATUS_FILE_PATH, "w") as f:
             json.dump(status_data, f, indent=4)
     except Exception as e:
         logger.warning(f"Failed to write status: {e}")
+
 
 def run_automation(mode="all"):
     logger.info(f"Starting Airline Passenger Automation process in mode: {mode}...")
