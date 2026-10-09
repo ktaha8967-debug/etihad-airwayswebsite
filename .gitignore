@@ -1,4 +1,4 @@
-﻿# Dependency directories
+# Dependency directories
 node_modules/
 jspm_packages/
 web_modules/
@@ -40,6 +40,7 @@ cache2/
 *.svg
 outputs/
 temp/
+scratch/
 
 # Large Binary Files & Media (Prevents GitHub RPC errors)
 *.mp4

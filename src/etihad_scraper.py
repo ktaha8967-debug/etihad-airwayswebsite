@@ -12,7 +12,7 @@ class EtihadScraper:
         self.page = None
 
     def start(self):
-        """Initializes the playwright browser session."""
+        """Initializes the playwright browser session with real Chrome under Xvfb to bypass Akamai."""
         logger.info("Starting Playwright browser for Etihad Scraper...")
         if not self.playwright:
             import asyncio
@@ -21,16 +21,34 @@ class EtihadScraper:
             except Exception:
                 pass
             self.playwright = sync_playwright().start()
-        self.browser = self.playwright.chromium.launch(
-            headless=HEADLESS,
-            args=["--disable-http2"]
-        )
+
+        import os
+        if "DISPLAY" not in os.environ:
+            os.environ["DISPLAY"] = ":99"
+
+        chrome_path = "/home/taha/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome"
+        executable_path = chrome_path if os.path.exists(chrome_path) else None
+
+        launch_kwargs = {
+            "headless": False if os.environ.get("DISPLAY") else HEADLESS,
+            "args": [
+                "--disable-blink-features=AutomationControlled",
+                "--no-sandbox",
+                "--disable-setuid-sandbox"
+            ],
+            "env": {"DISPLAY": os.environ.get("DISPLAY", ":99"), **os.environ}
+        }
+        if executable_path:
+            launch_kwargs["executable_path"] = executable_path
+
+        self.browser = self.playwright.chromium.launch(**launch_kwargs)
         self.context = self.browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            viewport={"width": 1280, "height": 800}
         )
         self.page = self.context.new_page()
-        # Apply standard Playwright stealth configuration using the correct Class method
-        Stealth().apply_stealth_sync(self.page)
+        self.page.add_init_script("""
+            Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        """)
         self.page.set_default_timeout(TIMEOUT)
 
     def stop(self):
@@ -52,58 +70,59 @@ class EtihadScraper:
         logger.info(f"Accessing booking for PNR: {pnr}, Last Name: {last_name}")
         try:
             self.page.goto(ETIHAD_MANAGE_BOOKING_URL, wait_until="domcontentloaded")
+            self.page.wait_for_timeout(2000)
 
-            # Close cookies consent if it appears
+            # Dismiss OneTrust cookie banner if visible
             try:
-                # Based on screenshot: cookie banner button has text 'Close' or similar
-                cookie_close = self.page.locator("button:has-text('Close'), button:has-text('Accept'), #onetrust-accept-btn-handler")
-                if cookie_close.first.is_visible():
-                    cookie_close.first.click()
+                cookie_btn = self.page.locator("#onetrust-accept-btn-handler, button:has-text('Accept')").first
+                if cookie_btn.is_visible():
+                    cookie_btn.click(timeout=2000)
             except Exception:
                 pass
 
             # Fill PNR and Last name
-            # Selectors updated based on screenshot placeholders
-            pnr_input = self.page.locator("[placeholder*='Trip reference'], [placeholder*='reference or ticket number'], input[name='bookingReference']")
-            lastname_input = self.page.locator("[placeholder*='Last name'], [placeholder*='Last Name'], input[name='lastName']")
+            pnr_input = self.page.locator("input[name='bookingReference'], [placeholder*='Trip reference'], #bookingReference").first
+            lastname_input = self.page.locator("input[name='lastName'], [placeholder*='Last name'], #lastName").first
 
-            # Wait for PNR field to be visible in case elements load dynamically
-            pnr_input.first.wait_for(state="visible", timeout=15000)
+            pnr_input.wait_for(state="visible", timeout=15000)
+            pnr_input.fill(pnr)
+            lastname_input.fill(last_name)
 
-            pnr_input.first.fill(pnr)
-            lastname_input.first.fill(last_name)
-
-            # Click search/submit button
-            submit_btn = self.page.locator("button:has-text('Search'), button:has-text('Submit')")
+            # Click search
+            submit_btn = self.page.locator("button:has-text('Search'), button:has-text('Find'), button[type='submit']").first
             submit_btn.click()
 
-            # Wait for redirection/load state
-            self.page.wait_for_load_state("domcontentloaded")
-            self.page.wait_for_timeout(1000) # Reduced grace period
-            
-            # Wait for either the passenger info/flight details selector to appear or a specific page elements
+            # Wait for either success (Trip reference / Flight details) or error banner
+            self.page.wait_for_timeout(3000)
+            for _ in range(8):
+                body_text = self.page.locator("body").inner_text()
+                
+                # Check for booking not found error
+                if "unable to find a booking" in body_text.lower() or "error-code=ssg" in self.page.url.lower():
+                    logger.warning(f"Etihad booking not found for PNR {pnr}, Last Name {last_name}")
+                    try:
+                        self.page.screenshot(path="scratch/etihad_not_found.png")
+                    except Exception:
+                        pass
+                    return False
+                    
+                # Check for success
+                if "trip reference" in body_text.lower() or "flight details" in body_text.lower():
+                    logger.info(f"Successfully accessed Etihad booking for PNR: {pnr}")
+                    return True
+                    
+                self.page.wait_for_timeout(1000)
+
+            logger.warning(f"Timeout waiting for Etihad booking details for PNR: {pnr}")
             try:
-                # Wait for any element containing booking/flight details to become visible (waiting out skeleton loader)
-                loc1 = self.page.locator("text=Trip reference")
-                loc2 = self.page.locator("text=Boarding pass")
-                loc3 = self.page.locator("text=Flight details")
-                success_selector = loc1.or_(loc2).or_(loc3).first
-                success_selector.wait_for(state="visible", timeout=20000)
-                logger.info(f"Successfully accessed booking for PNR: {pnr}")
-                return True
+                self.page.screenshot(path="scratch/etihad_timeout.png")
             except Exception:
-                # If we timed out, check if an error banner is visible
-                error_msg = self.page.locator(":text('We cannot find this booking'), :text('incorrect'), :text('error'), [class*='error'], [class*='alert']").first
-                if error_msg.is_visible():
-                    logger.warning(f"Failed to access booking. Error shown: {error_msg.inner_text()}")
-                else:
-                    logger.warning(f"Failed to access booking for PNR: {pnr} (Timeout waiting for details to load)")
-                return False
+                pass
+            return False
         except Exception as e:
             logger.error(f"Error accessing booking {pnr}: {e}")
             try:
-                self.page.screenshot(path="etihad_error.png")
-                logger.info("Saved error screenshot to etihad_error.png")
+                self.page.screenshot(path="scratch/etihad_error.png")
             except Exception:
                 pass
             return False
@@ -179,43 +198,54 @@ class EtihadScraper:
         """
         Extracts passenger data specifically for the passenger matching the last name.
         """
+        import re
         details = {}
         try:
-            # Locate the specific passenger card container filtering by last name
-            passenger_card = self.page.locator("[class*='passenger-card'], [class*='passenger-details'], [class*='Passenger'], .passenger-details").filter(has_text=last_name).first
+            # Wait for content to stabilize
+            self.page.wait_for_timeout(2000)
             
+            # Locate and expand passenger card for last name
+            passenger_card = self.page.locator(f":text('{last_name}')").first
             if passenger_card.is_visible():
-                # Expand the card if not already expanded (force click to bypass overlay labels)
                 passenger_card.click(force=True)
-                self.page.wait_for_timeout(500) # Reduced delay
-                
-                # Extract the full name from inside this passenger's card
-                name_locator = passenger_card.locator("[class*='PassengerName'], [class*='passengerName'], .passenger-name, p").first
-                if name_locator.count() > 0 and name_locator.inner_text().strip():
-                    details["passenger_name"] = name_locator.inner_text().strip()
-            
-            # Fallback if specific card extraction fails
-            if "passenger_name" not in details or not details["passenger_name"]:
-                # Check for elements with "Adult" label and extract the name below them
-                adult_label = self.page.locator("text=Adult").first
-                if adult_label.is_visible():
-                    parent_text = adult_label.locator("xpath=..").inner_text()
-                    lines = [line.strip() for line in parent_text.split("\n") if line.strip()]
-                    if len(lines) > 1:
-                        details["passenger_name"] = lines[1] if "Adult" in lines[0] else lines[0]
-            
-            # Default fallback if still not found
-            if "passenger_name" not in details or not details["passenger_name"]:
-                details["passenger_name"] = f"Passenger {last_name}"
+                self.page.wait_for_timeout(1000)
 
-            # Flight details extraction
-            flight_locator = self.page.locator("h2:has-text('to'), [class*='flight-title'], [class*='FlightTitle']").first
-            if flight_locator.is_visible():
-                details["flight_number"] = flight_locator.inner_text().strip()
-            else:
-                details["flight_number"] = "Flight Info"
+            body_text = self.page.locator("body").inner_text()
+            lines = [line.strip() for line in body_text.split("\n") if line.strip()]
+
+            # 1. Passenger Name
+            pax_name = ""
+            for idx, line in enumerate(lines):
+                if last_name.lower() in line.lower() and not any(k in line.lower() for k in ["trip reference", "manage trip"]):
+                    pax_name = line
+                    break
+            if not pax_name:
+                pax_name = f"Passenger {last_name}"
+            details["passenger_name"] = pax_name
+
+            # 2. Route
+            route = ""
+            for line in lines:
+                if " to " in line and not any(k in line.lower() for k in ["changes", "hours", "welcome", "up to", "manage", "download"]):
+                    route = line
+                    break
+
+            # 3. Flight Numbers (e.g. EY 6, EY 300)
+            flights = sorted(list(set(re.findall(r'\bEY\s*\d+\b', body_text))))
+            
+            # Combine into a clear flight details description
+            flight_desc_parts = []
+            if route:
+                flight_desc_parts.append(route)
+            if flights:
+                flight_desc_parts.append(f"({', '.join(flights)})")
                 
-            logger.info(f"Extracted details for {last_name}: {details}")
+            flight_desc = " ".join(flight_desc_parts) if flight_desc_parts else "Etihad Flight"
+            details["flight_number"] = flight_desc
+            details["flights_list"] = flights
+            details["route"] = route
+
+            logger.info(f"Extracted Etihad details for {last_name}: {details}")
         except Exception as e:
             logger.warning(f"Could not extract details for {last_name}: {e}")
         return details

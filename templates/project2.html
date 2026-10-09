@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 2: Saudia Direct Enrollment | Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #070a13;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.25);
+            --secondary: #3b82f6;
+            --accent: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 270px;
+            background: rgba(11, 17, 32, 0.85);
+            border-right: 1px solid var(--border-subtle);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .brand-text h1 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--primary);
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-divider {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 16px 0 8px 12px;
+            font-weight: 700;
+        }
+
+        .project1-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .project1-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #60a5fa;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(11, 17, 32, 0.6);
+            border-bottom: 1px solid var(--border-subtle);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title h2 {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            border-radius: 100px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+
+        .status-dot.running {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-sample {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 14px var(--primary-glow);
+        }
+
+        .btn-sample:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 32px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Metric Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-top: 6px;
+            color: var(--text-main);
+        }
+
+        .metric-value.success { color: #34d399; }
+        .metric-value.warning { color: #fbbf24; }
+        .metric-value.danger { color: #f87171; }
+
+        /* Split Section */
+        .split-section {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 16px;
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 480px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+        /* Terminal */
+        .terminal-box {
+            background: #050811;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            height: 220px;
+            overflow-y: auto;
+            color: #38bdf8;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand-box">
+            <div class="brand-icon">🇸🇦</div>
+            <div class="brand-text">
+                <h1>Project 2 Engine</h1>
+                <span class="brand-badge">Saudia Direct Enrollment</span>
+            </div>
+        </div>
+
+        <ul class="nav-list">
+            <li class="nav-item active">
+                <span>📊 Project 2 Dashboard</span>
+            </li>
+            
+            <div class="nav-divider">Switch Workspace</div>
+            
+            <a href="/dashboard" class="project1-link" title="Switch back to Project 1 (Etihad + Saudia)">
+                <span>✈️ Project 1 (Etihad Suite)</span>
+            </a>
+        </ul>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 16px; font-size: 11px; color: var(--text-muted);">
+            <div>User: <strong id="usernameLabel">Active User</strong></div>
+            <div style="margin-top: 4px;">Port: <strong>27182</strong></div>
+            <div style="margin-top: 12px;">
+                <a href="/logout" style="color: #f87171; text-decoration: none; font-weight: 700;">🚪 Sign Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+        <div class="header">
+            <div class="header-title">
+                <h2>Saudia Direct Registration Pipeline (Project 2)</h2>
+                <p>Bulk registration of passenger Excel sheets with custom domain catch-all or provided emails</p>
+            </div>
+            <div class="header-actions">
+                <div class="status-badge">
+                    <div id="statusDot" class="status-dot"></div>
+                    <span id="statusText">Idle</span>
+                </div>
+                <a href="/api/project2/download?format=xlsx" class="btn btn-outline" style="font-size: 12px;">Export Excel (.xlsx)</a>
+                <a href="/api/project2/download?format=csv" class="btn btn-outline" style="font-size: 12px;">Export CSV (.csv)</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total in Queue</div>
+                    <div id="statTotal" class="metric-value">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Enrolled / Activated</div>
+                    <div id="statSuccess" class="metric-value success">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Processed</div>
+                    <div id="statProcessed" class="metric-value warning">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Errors / Skipped</div>
+                    <div id="statFailed" class="metric-value danger">0</div>
+                </div>
+            </div>
+
+            <!-- Split: Controls & Domain Config -->
+            <div class="split-section">
+                <!-- Left: Action Controls -->
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <span>⚡ Execution Controls</span>
+                    </div>
+                    <div class="panel-subtitle">Run a quick sample for client verification or process full passenger sheet</div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button id="btnSample" class="btn btn-sample" style="flex: 1;" onclick="startProject2Flow(3)">
+                            🎯 Run 2-3 Sample Test (For Client)
+                        </button>
+                        <button id="btnFull" class="btn btn-primary" style="flex: 1;" onclick="startProject2Flow(null)">
+                            🚀 Run Full Enrollment
+                        </button>
+                        <button id="btnStop" class="btn btn-danger" style="display: none;" onclick="stopProject2Flow()">
+                            🛑 Stop
+                        </button>
+                    </div>
+
+                    <!-- Dropzone -->
+                    <div class="dropzone" onclick="document.getElementById('p2FileInput').click()">
+                        <div style="font-size: 28px; margin-bottom: 8px;">📥</div>
+                        <div style="font-size: 14px; font-weight: 700;">Upload Project 2 Passenger Excel File</div>
+                        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Click to select .xlsx, .xls, or .csv</div>
+                        <input type="file" id="p2FileInput" accept=".xlsx, .xls, .csv" style="display: none;">
+                    </div>
+                    <div id="uploadFeedback" style="font-size: 12px; text-align: center; color: var(--primary); font-weight: 600; margin-bottom: 12px;"></div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-outline" style="font-size: 12px; color: #60a5fa; border-color: #3b82f6;" onclick="syncWelcomeIds()">
+                            📬 Sync AlFursan IDs from Inbox
+                        </button>
+                        <button class="btn btn-outline" style="font-size: 12px; color: #f87171;" onclick="resetProject2Queue()">
+                            🔄 Reset Queue
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Email & Domain Settings -->
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <span>🌐 Domain / Email Routing</span>
+                    </div>
+                    <div class="panel-subtitle">Configure Gmail IMAP connection or custom domain catch-all</div>
+
+                    <div class="form-group">
+                        <label class="form-label">Custom Catch-All Domain (Optional)</label>
+                        <input type="text" id="cfgDomain" class="form-input" placeholder="e.g. flysaudia.agency">
+                        <span style="font-size: 10px; color: var(--text-muted);">Emails like pax_1234@yourdomain.com will route to master</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Master Receiver Gmail</label>
+                        <input type="email" id="cfgMasterEmail" class="form-input" placeholder="e.g. your_email@gmail.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Google 16-char App Password</label>
+                        <input type="password" id="cfgMasterPwd" class="form-input" placeholder="16-character Google App Password">
+                        <div style="font-size: 11px; color: #fbbf24; margin-top: 6px; line-height: 1.4;">
+                            ⚠️ <strong>Gmail Setup:</strong><br>
+                            1. In Gmail Settings > <strong>Forwarding and POP/IMAP</strong>, select <strong>Enable IMAP</strong>.<br>
+                            2. Generate a 16-letter App Password at <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #60a5fa; text-decoration: underline;">Google App Passwords</a>.
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-outline" id="btnTestConn" style="flex: 1; border-color: #3b82f6; color: #60a5fa;" onclick="testConfig()">
+                            🔌 Test Connection
+                        </button>
+                        <button class="btn btn-outline" id="btnSaveConn" style="flex: 1; border-color: var(--primary); color: #34d399;" onclick="saveConfig()">
+                            💾 Save Settings
+                        </button>
+                    </div>
+                    <div id="cfgFeedback" style="margin-top: 10px; font-size: 11px; line-height: 1.4; display: none; padding: 8px 12px; border-radius: 6px;"></div>
+                </div>
+            </div>
+
+            <!-- Terminal Execution Logs -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <span>💻 Real-Time Execution Terminal (Project 2)</span>
+                </div>
+                <div class="panel-subtitle">Live Playwright browser execution logs and activation status</div>
+                <div id="p2Terminal" class="terminal-box">Waiting for execution trigger...</div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-card">
+                <div class="panel-title">
+                    <span>📋 Passenger Queue & Saudia Membership IDs</span>
+                </div>
+                <div class="panel-subtitle">Live generated membership IDs and activation status</div>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Title</th>
+                                <th>Passport / ID</th>
+                                <th>Email Used</th>
+                                <th>Saudia Membership ID</th>
+                                <th>Status</th>
+                                <th>Remarks</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p2TableBody">
+                            <tr>
+                                <td colspan="10" style="text-align: center; color: var(--text-muted); padding: 32px;">No passengers loaded. Upload an Excel file above.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        async function fetchProject2Records() {
+            try {
+                const res = await fetch('/api/project2/records');
+                if (res.status === 401) { window.location.href = '/login'; return; }
+                const data = await res.json();
+                renderTable(data);
+            } catch (e) {
+                console.error('Error fetching records:', e);
+            }
+        }
+
+        function renderTable(passengers) {
+            const body = document.getElementById('p2TableBody');
+            if (!passengers || passengers.length === 0) {
+                body.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 32px;">No passengers loaded. Upload an Excel file above.</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = passengers.map((p, idx) => {
+                let badgeClass = 'badge-warning';
+                if (p.status === 'Activated') badgeClass = 'badge-success';
+                if (p.status.includes('Failed')) badgeClass = 'badge-danger';
+
+                return `
+                    <tr>
+                        <td style="color: var(--text-muted);">${idx + 1}</td>
+                        <td style="font-weight: 700;">${p.first_name || '—'}</td>
+                        <td style="font-weight: 700;">${p.last_name || '—'}</td>
+                        <td>${p.title || 'Mr'}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">${p.passport || '—'}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; color: #60a5fa; font-size: 12px;">${p.email || '—'}</td>
+                        <td style="font-family: 'JetBrains Mono', monospace; color: #34d399; font-weight: 800; font-size: 13px;">${p.saudia_id || '—'}</td>
+                        <td><span class="badge ${badgeClass}">${p.status || 'Pending'}</span></td>
+                        <td style="color: var(--text-muted); font-size: 12px;">${p.remarks || '—'}</td>
+                        <td>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn btn-outline" style="padding: 3px 6px; font-size: 11px; border-color: #10b981; color: #34d399;" title="Paste activation link from email to open on server" onclick="promptActivateLink(${p.id}, '${(p.first_name || '') + ' ' + (p.last_name || '')}')">
+                                    🔗 Activate
+                                </button>
+                                <button class="btn btn-outline" style="padding: 3px 6px; font-size: 11px; border-color: #3b82f6; color: #60a5fa;" title="Enter Saudia Membership ID" onclick="promptEditSaudiaId(${p.id}, '${(p.first_name || '') + ' ' + (p.last_name || '')}', '${p.saudia_id || ''}')">
+                                    ✏️ Edit
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function fetchProject2Status() {
+            try {
+                const res = await fetch('/api/project2/status');
+                if (res.status === 401) return;
+                const s = await res.json();
+
+                document.getElementById('statTotal').innerText = s.total || 0;
+                document.getElementById('statSuccess').innerText = s.success || 0;
+                document.getElementById('statProcessed').innerText = s.processed || 0;
+                document.getElementById('statFailed').innerText = (s.failed || 0) + (s.skipped || 0);
+
+                const statusText = document.getElementById('statusText');
+                const statusDot = document.getElementById('statusDot');
+                const btnSample = document.getElementById('btnSample');
+                const btnFull = document.getElementById('btnFull');
+                const btnStop = document.getElementById('btnStop');
+
+                statusText.innerText = s.status_text || 'Idle';
+                if (s.status_text === 'Running') {
+                    statusDot.className = 'status-dot running';
+                    btnSample.disabled = true;
+                    btnFull.disabled = true;
+                    btnStop.style.display = 'inline-flex';
+                } else {
+                    statusDot.className = 'status-dot';
+                    btnSample.disabled = false;
+                    btnFull.disabled = false;
+                    btnStop.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Error fetching status:', e);
+            }
+        }
+
+        async function fetchProject2Logs() {
+            try {
+                const res = await fetch('/api/project2/logs');
+                if (res.status === 401) return;
+                const data = await res.json();
+                const term = document.getElementById('p2Terminal');
+                if (data.logs) {
+                    term.innerText = data.logs;
+                    term.scrollTop = term.scrollHeight;
+                }
+            } catch (e) {
+                console.error('Error fetching logs:', e);
+            }
+        }
+
+        async function startProject2Flow(sampleLimit) {
+            const endpoint = sampleLimit ? `/api/project2/start?limit=${sampleLimit}` : '/api/project2/start';
+            try {
+                const res = await fetch(endpoint, { method: 'POST' });
+                const d = await res.json();
+                if (d.status === 'success') {
+                    fetchProject2Status();
+                    fetchProject2Logs();
+                } else {
+                    alert(d.message);
+                }
+            } catch (e) {
+                alert('Failed to start Project 2 automation: ' + e);
+            }
+        }
+
+        async function stopProject2Flow() {
+            if (!confirm('Stop Project 2 automation?')) return;
+            try {
+                const res = await fetch('/api/project2/stop', { method: 'POST' });
+                const d = await res.json();
+                alert(d.message);
+                fetchProject2Status();
+            } catch (e) {
+                alert('Error stopping: ' + e);
+            }
+        }
+
+        async function resetProject2Queue() {
+            if (!confirm('Are you sure you want to reset all Project 2 records to Pending for a fresh run?')) return;
+            try {
+                const res = await fetch('/api/project2/reset', { method: 'POST' });
+                const d = await res.json();
+                alert(d.message);
+                fetchProject2Records();
+                fetchProject2Status();
+            } catch (e) {
+                alert('Reset error: ' + e);
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const res = await fetch('/api/project2/config');
+                const d = await res.json();
+                if (d.status === 'success') {
+                    document.getElementById('cfgDomain').value = d.config.domain_name || '';
+                    document.getElementById('cfgMasterEmail').value = d.config.master_email || '';
+                    document.getElementById('cfgMasterPwd').value = d.config.master_password || '';
+                }
+            } catch (e) {
+                console.error('Error loading config:', e);
+            }
+        }
+
+        async function testConfig() {
+            const email = document.getElementById('cfgMasterEmail').value.trim();
+            const pwd = document.getElementById('cfgMasterPwd').value.trim();
+            const box = document.getElementById('cfgFeedback');
+            box.style.display = 'block';
+            box.style.background = 'rgba(59, 130, 246, 0.15)';
+            box.style.color = '#93c5fd';
+            box.innerText = 'Testing IMAP login to ' + email + '...';
+            try {
+                const res = await fetch('/api/project2/test_credentials', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ master_email: email, master_password: pwd })
+                });
+                const d = await res.json();
+                if (d.status === 'success') {
+                    box.style.background = 'rgba(16, 185, 129, 0.15)';
+                    box.style.color = '#34d399';
+                    box.innerText = '✅ ' + d.message;
+                } else {
+                    box.style.background = 'rgba(239, 68, 68, 0.15)';
+                    box.style.color = '#fca5a5';
+                    box.innerText = '❌ ' + d.message;
+                }
+            } catch (e) {
+                box.style.background = 'rgba(239, 68, 68, 0.15)';
+                box.style.color = '#fca5a5';
+                box.innerText = '❌ Connection failed: ' + e;
+            }
+        }
+
+        async function saveConfig() {
+            const data = {
+                domain_name: document.getElementById('cfgDomain').value.trim(),
+                master_email: document.getElementById('cfgMasterEmail').value.trim(),
+                master_password: document.getElementById('cfgMasterPwd').value.trim()
+            };
+            const box = document.getElementById('cfgFeedback');
+            try {
+                const res = await fetch('/api/project2/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const d = await res.json();
+                box.style.display = 'block';
+                if (d.warning) {
+                    box.style.background = 'rgba(245, 158, 11, 0.15)';
+                    box.style.color = '#fcd34d';
+                    box.innerText = '⚠️ ' + d.message;
+                } else {
+                    box.style.background = 'rgba(16, 185, 129, 0.15)';
+                    box.style.color = '#34d399';
+                    box.innerText = '✅ ' + d.message;
+                }
+                alert(d.message);
+            } catch (e) {
+                alert('Failed to save config: ' + e);
+            }
+        }
+
+        async function syncWelcomeIds() {
+            const feedback = document.getElementById('uploadFeedback');
+            feedback.innerText = '📬 Scanning inbox for AlFursan Welcome emails...';
+            try {
+                const res = await fetch('/api/project2/sync_ids', { method: 'POST' });
+                const d = await res.json();
+                alert(d.message);
+                feedback.innerText = d.message;
+                fetchProject2Records();
+                fetchProject2Status();
+            } catch (e) {
+                alert('Sync error: ' + e);
+                feedback.innerText = 'Sync failed: ' + e;
+            }
+        }
+
+        async function promptEditSaudiaId(paxId, name, curId) {
+            const newId = prompt(`Enter AlFursan Membership ID for ${name}:`, curId || '');
+            if (newId === null) return;
+            const cleanId = newId.trim();
+            try {
+                const res = await fetch('/api/project2/update_record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id: paxId,
+                        saudia_id: cleanId,
+                        status: cleanId ? 'Activated' : 'Pending Activation'
+                    })
+                });
+                const d = await res.json();
+                if (d.status === 'success') {
+                    fetchProject2Records();
+                    fetchProject2Status();
+                } else {
+                    alert(d.message);
+                }
+            } catch (e) {
+                alert('Update error: ' + e);
+            }
+        }
+
+        async function promptActivateLink(paxId, name) {
+            const url = prompt(`Paste the Saudia Activation Link from your email for ${name}:`);
+            if (!url || !url.trim()) return;
+            const cleanUrl = url.trim();
+            const feedback = document.getElementById('uploadFeedback');
+            feedback.innerText = 'Opening activation link on server browser for ' + name + '...';
+            try {
+                const res = await fetch('/api/project2/activate_link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: paxId, url: cleanUrl })
+                });
+                const d = await res.json();
+                alert(d.message);
+                feedback.innerText = d.message;
+                fetchProject2Records();
+                fetchProject2Status();
+            } catch (e) {
+                alert('Activation failed: ' + e);
+                feedback.innerText = 'Activation failed: ' + e;
+            }
+        }
+
+        // Upload handler
+        document.getElementById('p2FileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const fd = new FormData();
+            fd.append('file', file);
+
+            const feedback = document.getElementById('uploadFeedback');
+            feedback.innerText = 'Uploading and loading passenger records...';
+
+            try {
+                const res = await fetch('/api/project2/upload', {
+                    method: 'POST',
+                    body: fd
+                });
+                const d = await res.json();
+                if (d.status === 'success') {
+                    feedback.innerText = '✅ ' + d.message;
+                    fetchProject2Records();
+                    fetchProject2Status();
+                } else {
+                    feedback.innerText = '❌ ' + d.message;
+                }
+            } catch (err) {
+                feedback.innerText = '❌ Upload failed: ' + err;
+            }
+        });
+
+        // Initialize polling and data
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchProject2Records();
+            fetchProject2Status();
+            fetchProject2Logs();
+            loadConfig();
+
+            setInterval(() => {
+                fetchProject2Status();
+                fetchProject2Records();
+                fetchProject2Logs();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

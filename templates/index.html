@@ -57,7 +57,7 @@
         }
 
         .sidebar-brand {
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
         .sidebar-brand h1 {
@@ -82,6 +82,7 @@
             gap: 8px;
             list-style: none;
             flex: 1;
+            overflow-y: auto;
         }
 
         .nav-item {
@@ -97,7 +98,7 @@
             transition: all 0.2s ease;
         }
 
-        .nav-item:hover, .nav-item.active {
+        .nav-item:hover {
             color: var(--text-main);
             background: rgba(255, 255, 255, 0.04);
         }
@@ -112,7 +113,7 @@
 
         .sidebar-footer {
             border-top: 1px solid var(--border-subtle);
-            padding-top: 20px;
+            padding-top: 16px;
             font-size: 11px;
             color: var(--text-muted);
             display: flex;
@@ -134,8 +135,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 24px 48px;
-            background: rgba(9, 13, 22, 0.4);
+            padding: 20px 48px;
+            background: rgba(9, 13, 22, 0.5);
             border-bottom: 1px solid var(--border-subtle);
             backdrop-filter: blur(20px);
         }
@@ -149,7 +150,7 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
         }
 
         .status-capsule {
@@ -162,6 +163,25 @@
             border-radius: 100px;
             font-size: 13px;
             font-weight: 600;
+        }
+
+        .user-capsule {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-capsule:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--primary);
         }
 
         .status-dot {
@@ -192,7 +212,7 @@
         /* Content Panel */
         .workspace-content {
             flex: 1;
-            padding: 40px 48px;
+            padding: 36px 48px;
             overflow-y: auto;
         }
 
@@ -249,45 +269,47 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .metric-value {
             font-size: 32px;
             font-weight: 800;
+            letter-spacing: -1px;
+            font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Split grid for Dashboard */
         .split-grid {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr 1fr;
             gap: 32px;
         }
 
-        /* Tracker and Quick Tools card */
+        /* Action Cards */
         .action-card {
             background: var(--bg-panel);
             border: 1px solid var(--border-subtle);
             border-radius: 16px;
             padding: 24px;
+            backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
         }
 
         .btn {
-            width: 100%;
-            padding: 14px;
+            padding: 12px 20px;
             border-radius: 12px;
-            border: none;
+            font-weight: 600;
             font-size: 14px;
-            font-weight: 700;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
         .btn-primary {
@@ -296,7 +318,7 @@
             box-shadow: 0 4px 14px var(--primary-glow);
         }
 
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover {
             background: var(--primary-hover);
         }
 
@@ -311,18 +333,28 @@
             background: var(--success);
             color: white;
             box-shadow: 0 4px 14px var(--success-glow);
-            text-decoration: none;
         }
 
         .btn-success:hover {
             background: #059669;
         }
 
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-active);
+        }
+
         /* Upload Area */
         .upload-box {
             border: 2px dashed rgba(255, 255, 255, 0.15);
             border-radius: 12px;
-            padding: 28px 20px;
+            padding: 24px 20px;
             text-align: center;
             cursor: pointer;
             background: rgba(255, 255, 255, 0.01);
@@ -353,7 +385,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 180px;
+            max-height: 220px;
             overflow-y: auto;
         }
 
@@ -448,26 +480,30 @@
         }
 
         .terminal-body {
-            background: #020305;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
+            font-size: 13px;
+            line-height: 1.6;
             color: #38bdf8;
-            padding: 20px;
-            border-radius: 12px;
-            flex: 1;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            flex: 1;
         }
 
-        /* Tracker block style */
         .tracker-card {
-            background: var(--bg-panel);
+            background: var(--bg-card);
             border: 1px solid var(--border-subtle);
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+        }
+
+        .tracker-head {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
         }
 
         .tracker-avatar {
@@ -497,6 +533,230 @@
             background: linear-gradient(90deg, var(--primary), var(--success));
             transition: width 0.4s ease;
         }
+
+        /* ==================== CREDENTIALS PAGE STYLES ==================== */
+        .cred-container {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 32px;
+        }
+
+        .cred-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-label small {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(15, 20, 36, 0.85);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 12px var(--primary-glow);
+            background: rgba(15, 20, 36, 1);
+        }
+
+        .input-group-pass {
+            display: flex;
+            position: relative;
+            width: 100%;
+        }
+
+        .input-group-pass input {
+            padding-right: 46px;
+        }
+
+        .pass-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 4px;
+        }
+
+        .pass-toggle-btn:hover {
+            color: var(--text-main);
+        }
+
+        .hint-box {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #93c5fd;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .hint-box a {
+            color: #60a5fa;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .test-feedback {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .test-feedback.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+
+        .test-feedback.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .team-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .team-item {
+            background: rgba(15, 20, 36, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .team-item:hover {
+            border-color: var(--border-active);
+            background: rgba(15, 20, 36, 0.9);
+        }
+
+        .team-item.current {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #0f1424;
+            border: 1px solid var(--border-active);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 460px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: relative;
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-subtle);
+            gap: 16px;
+        }
+
+        .modal-tab {
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -510,29 +770,58 @@
 
         <ul class="nav-menu">
             <li class="nav-item active" onclick="switchPage('dashboardPage', this)">
-                <span>Dashboard</span>
+                <span>📊 Dashboard</span>
             </li>
             <li class="nav-item" onclick="switchPage('passengersPage', this)">
-                <span>Total Queue</span>
+                <span>👥 Total Queue</span>
             </li>
             <li class="nav-item" onclick="switchPage('withIdPage', this)">
-                <span>Registered (With ID)</span>
+                <span>✅ Registered (With ID)</span>
             </li>
             <li class="nav-item" onclick="switchPage('withoutIdPage', this)">
-                <span>Pending (Without ID)</span>
+                <span>⏳ Pending (Without ID)</span>
             </li>
             <li class="nav-item" onclick="switchPage('flightsPage', this)">
-                <span>Flight Details</span>
+                <span>✈️ Flight Details</span>
             </li>
             <li class="nav-item" onclick="switchPage('terminalPage', this)">
-                <span>Terminal Output</span>
+                <span>💻 Terminal Output</span>
+            </li>
+            <li class="nav-item" id="navEmailSettings" onclick="switchPage('emailSettingsPage', this)">
+                <span>⚙️ Signup Email Settings</span>
+            </li>
+            <li class="nav-item" style="margin-top: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #34d399; font-weight: 700;" onclick="window.location.href='/project2'">
+                <span>🇸🇦 Switch to Project 2 (Saudia)</span>
             </li>
         </ul>
 
         <div class="sidebar-footer">
-            <div>Uptime: Live</div>
-            <div>Database: Connected</div>
-            <div>Server Port: 5000</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; font-size: 14px;">👤</div>
+                <div style="overflow: hidden; text-align: left;">
+                    <div style="font-size: 13px; font-weight: 700; color: #60a5fa;" id="sidebarUser">User</div>
+                    <div style="font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px;" id="sidebarEmail">user@email.com</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; cursor: pointer; transition: all 0.2s ease;" onclick="switchPage('emailSettingsPage', document.getElementById('navEmailSettings'))" title="Click to rotate or configure Saudia signup email">
+                <div style="font-size: 11px; font-weight: 700; color: #34d399; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 7px; height: 7px; background: #34d399; border-radius: 50%; box-shadow: 0 0 8px #34d399;"></span>
+                        Saudia Signup Engine
+                    </span>
+                    <span style="font-size: 10px; color: #60a5fa; text-decoration: underline;">Change ⚙️</span>
+                </div>
+                <div id="footerEngineEmail" style="font-size: 11px; color: var(--text-main); font-weight: 600; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">ktaha8967@gmail.com</div>
+                <div id="footerEngineBadge" style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Ready for 200–300 signups</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: var(--text-muted);">
+                <span>Port: <strong>27182</strong></span>
+                <a href="/logout" style="color: #f87171; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    🚪 Sign Out
+                </a>
+            </div>
         </div>
     </div>
 
@@ -552,6 +841,9 @@
                     <a href="/api/download?format=xlsx" id="downloadXlsxBtn" class="btn btn-success" style="padding: 8px 14px; font-size: 13px; width: auto; background: #10b981; text-decoration: none;">Export Excel (.xlsx)</a>
                     <a href="/api/download?format=csv" id="downloadCsvBtn" class="btn btn-primary" style="padding: 8px 14px; font-size: 13px; width: auto; background: #3b82f6; text-decoration: none;">Export CSV (.csv)</a>
                 </div>
+                <a href="/logout" class="btn btn-outline" style="padding: 7px 14px; font-size: 12px; text-decoration: none;" title="Sign out">
+                    🚪 Logout
+                </a>
             </div>
         </div>
 
@@ -596,19 +888,23 @@
                     <div class="right-split" style="display: flex; flex-direction: column; gap: 32px;">
                         <!-- Controls panel -->
                         <div class="action-card">
-                            <h3 style="font-size: 15px; font-weight: 700;">Controls</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <h3 style="font-size: 15px; font-weight: 700;">Automation Controls</h3>
+                            </div>
                             <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
                                 <button id="flightBtn" class="btn btn-primary" style="background: #3b82f6; box-shadow: 0 4px 14px rgba(59,130,246,0.2);">Run 1: Extract Flights Only</button>
                                 <button id="signupBtn" class="btn btn-primary" style="background: #10b981; box-shadow: 0 4px 14px rgba(16,185,129,0.2);">Run 2: Register Memberships</button>
                                 <button id="claimBtn" class="btn btn-primary" style="background: #f59e0b; box-shadow: 0 4px 14px rgba(245,158,11,0.2);">Run 3: Claim Miles Only</button>
                                 <button id="startBtn" class="btn btn-primary" style="background: #6366f1; box-shadow: 0 4px 14px rgba(99,102,241,0.2);">Run All (End-to-End)</button>
+                                <button id="resetQueueBtn" class="btn" style="background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); font-weight: 600; width: 100%; transition: all 0.2s;" onclick="resetQueue()">🔄 Reset Queue (Clear IDs & Reprocess)</button>
+                                <button id="stopBtn" class="btn" style="background: #ef4444; color: white; box-shadow: 0 4px 14px rgba(239,68,68,0.3); display: none; font-weight: 700; width: 100%;" onclick="stopFlow()">🛑 Stop Automation</button>
                             </div>
                             
                             <div class="upload-box" onclick="document.getElementById('fileInput').click()">
                                 <div style="font-size: 24px; margin-bottom: 8px;">📥</div>
-                                <div class="dropzone-label">Drop excel here</div>
-                                <div class="dropzone-sub">Click to browse (.xlsx, .xls)</div>
-                                <input type="file" id="fileInput" accept=".xlsx, .xls" style="display: none;">
+                                <div class="dropzone-label">Upload Passenger Excel File</div>
+                                <div class="dropzone-sub">Click to browse (.xlsx, .xls) file</div>
+                                <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none;">
                             </div>
                             <div id="uploadStatus" style="font-size: 12px; text-align: center; color: var(--success); font-weight: 600; margin-top: 10px;"></div>
                         </div>
@@ -656,7 +952,7 @@
                 </div>
             </div>
 
-            <!-- 3. WITH MEMBERSHIP ID -->
+            <!-- 4. WITH MEMBERSHIP ID -->
             <div id="withIdPage" class="page-view">
                 <div class="table-panel">
                     <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Registered Passengers (With Saudia Membership ID)</h3>
@@ -682,7 +978,7 @@
                 </div>
             </div>
 
-            <!-- 4. WITHOUT MEMBERSHIP ID -->
+            <!-- 5. WITHOUT MEMBERSHIP ID -->
             <div id="withoutIdPage" class="page-view">
                 <div class="table-panel">
                     <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Pending Passengers (Without Saudia Membership ID)</h3>
@@ -707,7 +1003,7 @@
                 </div>
             </div>
 
-            <!-- 5. FLIGHT DETAILS PAGE -->
+            <!-- 6. FLIGHT DETAILS PAGE -->
             <div id="flightsPage" class="page-view">
                 <div class="table-panel">
                     <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 20px;">Extracted Flight Itinerary Details</h3>
@@ -730,7 +1026,7 @@
                 </div>
             </div>
 
-            <!-- 6. TERMINAL LOGS PAGE -->
+            <!-- 7. TERMINAL LOGS PAGE -->
             <div id="terminalPage" class="page-view">
                 <div class="terminal-panel">
                     <div class="terminal-body" id="terminal">
@@ -739,10 +1035,127 @@
                 </div>
             </div>
 
+            <!-- 8. SAUDIA SIGNUP EMAIL SETTINGS & BATCH ROTATION PAGE -->
+            <div id="emailSettingsPage" class="page-view">
+                <div style="max-width: 1050px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+                    
+                    <!-- Notice Banner -->
+                    <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 14px; padding: 20px 24px; display: flex; gap: 16px; align-items: flex-start;">
+                        <div style="font-size: 28px; line-height: 1;">💡</div>
+                        <div style="font-size: 13px; line-height: 1.6; color: #cbd5e1;">
+                            <strong style="color: #60a5fa; font-size: 15px; display: block; margin-bottom: 4px;">Saudia Signup Email & Batch Rotation System</strong>
+                            Gmail accounts hit receiving and registration limits after approximately <strong>200–300 verification emails</strong>. Whenever you reach that limit, you can easily change the active email and 16-character App Password right here. The automation engine will immediately route all upcoming passenger registrations through your new email without needing to contact support or change backend code!
+                        </div>
+                    </div>
+
+                    <!-- Main Grid -->
+                    <div style="display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 24px;">
+                        
+                        <!-- Left Form Card -->
+                        <div class="action-card" style="display: flex; flex-direction: column; gap: 20px; padding: 28px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 14px;">
+                                <div>
+                                    <h3 style="font-size: 16px; font-weight: 700; color: #fff;">Saudia Engine Configuration</h3>
+                                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Email used to receive Saudia 4-digit verification OTP codes</p>
+                                </div>
+                                <div id="activeEmailDisplay" style="font-size: 12px; font-weight: 600;">
+                                    <span style="color: #34d399;">🟢 Active</span>
+                                </div>
+                            </div>
+
+                            <!-- Gmail Address Field -->
+                            <div class="form-group">
+                                <label class="form-label" for="signupEmailInput">
+                                    <span>Gmail Address</span>
+                                    <small>Where Saudia verification emails will arrive</small>
+                                </label>
+                                <input type="email" id="signupEmailInput" class="form-input" placeholder="e.g. yourbatch1@gmail.com" autocomplete="off">
+                            </div>
+
+                            <!-- Google App Password Field -->
+                            <div class="form-group">
+                                <label class="form-label" for="signupAppPassInput">
+                                    <span>16-Character Google App Password</span>
+                                    <small><a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #60a5fa; text-decoration: underline;">Generate in Google Account ↗</a></small>
+                                </label>
+                                <div class="input-group-pass">
+                                    <input type="password" id="signupAppPassInput" class="form-input" placeholder="e.g. abcd efgh ijkl mnop" autocomplete="off">
+                                    <button type="button" class="pass-toggle-btn" onclick="togglePassVisibility('signupAppPassInput', this)" title="Show/Hide Password">👁️</button>
+                                </div>
+                            </div>
+
+                            <!-- Saudia Passenger Account Password Field -->
+                            <div class="form-group">
+                                <label class="form-label" for="signupSaudiaPassInput">
+                                    <span>Saudia Passenger Account Password</span>
+                                    <small>Password set on Saudia website for new members</small>
+                                </label>
+                                <div class="input-group-pass">
+                                    <input type="password" id="signupSaudiaPassInput" class="form-input" value="TempPass123!" placeholder="Must have uppercase, lowercase & symbol" autocomplete="off">
+                                    <button type="button" class="pass-toggle-btn" onclick="togglePassVisibility('signupSaudiaPassInput', this)" title="Show/Hide Password">👁️</button>
+                                </div>
+                            </div>
+
+                            <!-- Test / Status Feedback Alert Box -->
+                            <div id="emailSettingsFeedback" class="test-feedback" style="display: none;"></div>
+
+                            <!-- Buttons Action Bar -->
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <button type="button" id="testEmailBtn" class="btn" style="background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; font-weight: 600;" onclick="testEmailSettings()">
+                                        🧪 Test Connection
+                                    </button>
+                                    <button type="button" id="saveEmailBtn" class="btn btn-primary" style="background: #10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25); font-weight: 700;" onclick="saveEmailSettings()">
+                                        💾 Save & Apply Email
+                                    </button>
+                                </div>
+                                <button type="button" id="resetEmailBtn" class="btn btn-outline" style="font-size: 12px; color: var(--text-muted); border-color: var(--border-subtle); padding: 9px;" onclick="resetDefaultEmailSettings()">
+                                    🔄 Reset to KTaha Default (ktaha8967@gmail.com)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right Info & Instructions Card -->
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <!-- How to Guide -->
+                            <div class="action-card" style="padding: 24px; display: flex; flex-direction: column; gap: 14px;">
+                                <h4 style="font-size: 14px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+                                    <span>🔑</span> How to Get a Google App Password
+                                </h4>
+                                <ol style="padding-left: 20px; font-size: 12px; line-height: 1.7; color: #94a3b8; margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                                    <li>Open your Google Account: <a href="https://myaccount.google.com/security" target="_blank" style="color: #60a5fa; text-decoration: underline;">myaccount.google.com/security</a>.</li>
+                                    <li>Enable <strong>2-Step Verification</strong> (if not already enabled).</li>
+                                    <li>Go to <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #60a5fa; text-decoration: underline;"><strong>App Passwords</strong></a>.</li>
+                                    <li>Enter app name (e.g. <em>Saudia Automation</em>) and click <strong>Create</strong>.</li>
+                                    <li>Copy the generated <strong>16-letter password</strong> and paste it here.</li>
+                                    <li>Click <strong>🧪 Test Connection</strong> to verify instantly!</li>
+                                </ol>
+                            </div>
+
+                            <!-- Excel Sheet Custom Emails Notice -->
+                            <div class="action-card" style="padding: 24px; display: flex; flex-direction: column; gap: 10px; border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.03);">
+                                <h4 style="font-size: 14px; font-weight: 700; color: #fbbf24; display: flex; align-items: center; gap: 8px;">
+                                    <span>📊</span> Custom Emails in Excel Sheet
+                                </h4>
+                                <p style="font-size: 12px; line-height: 1.6; color: #cbd5e1; margin: 0;">
+                                    If you want individual passenger-specific emails, you can also add an email directly inside your Excel sheet in the <strong>Gmail/Email ID</strong> column. The bot will automatically prioritize the Excel row email if provided!
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
 
+
+
     <script>
+        let currentActiveUser = "taha";
+
         const startBtn = document.getElementById('startBtn');
         const flightBtn = document.getElementById('flightBtn');
         const signupBtn = document.getElementById('signupBtn');
@@ -769,8 +1182,9 @@
         function switchPage(pageId, el) {
             document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            el.classList.add('active');
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) targetPage.classList.add('active');
+            if (el) el.classList.add('active');
 
             const titles = {
                 'dashboardPage': 'Dashboard Overview',
@@ -778,13 +1192,275 @@
                 'withIdPage': 'Registered Passengers (With ID)',
                 'withoutIdPage': 'Pending Passengers (Without ID)',
                 'flightsPage': 'Flight Itinerary Details',
-                'terminalPage': 'Terminal execution logs'
+                'terminalPage': 'Terminal Execution Logs',
+                'emailSettingsPage': 'Saudia Signup Email & Batch Rotation'
             };
-            document.getElementById('viewTitle').innerText = titles[pageId];
+            document.getElementById('viewTitle').innerText = titles[pageId] || 'Dashboard';
+            if (pageId === 'emailSettingsPage') {
+                loadEmailSettings();
+            }
         }
 
+        function togglePassVisibility(inputId, btn) {
+            const el = document.getElementById(inputId);
+            if (!el) return;
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.innerText = '🙈';
+            } else {
+                el.type = 'password';
+                btn.innerText = '👁️';
+            }
+        }
+
+        // ==================== SAUDIA SIGNUP EMAIL CONFIGURATION ====================
+        let isSettingsLoaded = false;
+
+        async function loadEmailSettings(force = false) {
+            try {
+                const res = await fetch('/api/credentials');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const emailInput = document.getElementById('signupEmailInput');
+                    const passInput = document.getElementById('signupAppPassInput');
+                    const saudiaPassInput = document.getElementById('signupSaudiaPassInput');
+                    const activeBadge = document.getElementById('activeEmailDisplay');
+                    const footerEmail = document.getElementById('footerEngineEmail');
+                    const footerBadge = document.getElementById('footerEngineBadge');
+
+                    const activeEmail = data.active_email || 'ktaha8967@gmail.com';
+                    const isDefault = data.is_default;
+
+                    // Always update live status badges
+                    if (activeBadge) {
+                        if (isDefault) {
+                            activeBadge.innerHTML = `<span style="color: #34d399; font-weight: 700;">🟢 Active Engine: ${activeEmail}</span> <span style="font-size: 11px; background: rgba(16,185,129,0.15); color: #34d399; padding: 2px 8px; border-radius: 6px; margin-left: 6px;">KTaha Default</span>`;
+                        } else {
+                            activeBadge.innerHTML = `<span style="color: #60a5fa; font-weight: 700;">🟢 Active Engine: ${activeEmail}</span> <span style="font-size: 11px; background: rgba(59,130,246,0.15); color: #60a5fa; padding: 2px 8px; border-radius: 6px; margin-left: 6px;">Custom Engine</span>`;
+                        }
+                    }
+                    if (footerEmail) footerEmail.innerText = activeEmail;
+                    if (footerBadge) {
+                        footerBadge.innerText = isDefault ? 'KTaha Default IMAP' : 'Custom Gmail IMAP Active';
+                    }
+
+                    // Check if user has an unsaved draft in sessionStorage
+                    const draftEmail = sessionStorage.getItem('draft_signup_email');
+                    const draftPass = sessionStorage.getItem('draft_signup_app_pass');
+                    const draftSaudiaPass = sessionStorage.getItem('draft_signup_saudia_pass');
+
+                    // ONLY update input boxes on initial load or explicit force (Save/Reset)
+                    // NEVER overwrite text while user is typing or switching tabs!
+                    if (!isSettingsLoaded || force) {
+                        if (draftEmail !== null) {
+                            if (emailInput) emailInput.value = draftEmail;
+                        } else if (emailInput) {
+                            // If default, leave BLANK so user can type freely without default written
+                            emailInput.value = isDefault ? '' : (data.email || '');
+                        }
+
+                        if (draftPass !== null) {
+                            if (passInput) passInput.value = draftPass;
+                        } else if (passInput) {
+                            // If default, leave BLANK
+                            passInput.value = isDefault ? '' : (data.app_password || '');
+                        }
+
+                        if (draftSaudiaPass !== null) {
+                            if (saudiaPassInput) saudiaPassInput.value = draftSaudiaPass;
+                        } else if (saudiaPassInput) {
+                            saudiaPassInput.value = data.saudia_password || 'TempPass123!';
+                        }
+                        isSettingsLoaded = true;
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading email settings:', err);
+            }
+        }
+
+        async function testEmailSettings() {
+            const feedback = document.getElementById('emailSettingsFeedback');
+            const testBtn = document.getElementById('testEmailBtn');
+            const email = (document.getElementById('signupEmailInput').value || '').trim();
+            const appPassword = (document.getElementById('signupAppPassInput').value || '').trim();
+
+            if (!email) {
+                feedback.className = 'test-feedback error';
+                feedback.innerText = '⚠️ Please enter your Gmail address.';
+                feedback.style.display = 'block';
+                return;
+            }
+            if (!appPassword) {
+                feedback.className = 'test-feedback error';
+                feedback.innerText = '⚠️ Please enter your 16-character Google App Password.';
+                feedback.style.display = 'block';
+                return;
+            }
+
+            testBtn.disabled = true;
+            testBtn.innerText = '⏳ Testing Connection...';
+            feedback.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/credentials/test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, app_password: appPassword })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    feedback.className = 'test-feedback success';
+                    feedback.innerHTML = `✅ <strong>Success!</strong> IMAP login verified. Saudia verification OTP codes can be received and read from <strong>${email}</strong>.`;
+                } else {
+                    let formattedMsg = data.message || 'Connection failed.';
+                    // Make URLs clickable
+                    formattedMsg = formattedMsg.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: #60a5fa; text-decoration: underline; font-weight: 600;">$1 ↗</a>');
+                    feedback.className = 'test-feedback error';
+                    feedback.innerHTML = `❌ <strong>Connection Failed:</strong><br>${formattedMsg}`;
+                }
+                feedback.style.display = 'block';
+            } catch (err) {
+                feedback.className = 'test-feedback error';
+                feedback.innerHTML = `❌ <strong>Error:</strong> Failed to reach server. Check network connection.`;
+                feedback.style.display = 'block';
+            } finally {
+                testBtn.disabled = false;
+                testBtn.innerText = '🧪 Test Connection';
+            }
+        }
+
+        async function saveEmailSettings() {
+            const feedback = document.getElementById('emailSettingsFeedback');
+            const saveBtn = document.getElementById('saveEmailBtn');
+            const email = (document.getElementById('signupEmailInput').value || '').trim();
+            const appPassword = (document.getElementById('signupAppPassInput').value || '').trim();
+            const saudiaPassword = (document.getElementById('signupSaudiaPassInput').value || '').trim();
+
+            if (!email) {
+                feedback.className = 'test-feedback error';
+                feedback.innerText = '⚠️ Please enter your Gmail address.';
+                feedback.style.display = 'block';
+                return;
+            }
+            if (!appPassword) {
+                feedback.className = 'test-feedback error';
+                feedback.innerText = '⚠️ Please enter your 16-character Google App Password.';
+                feedback.style.display = 'block';
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.innerText = '💾 Saving...';
+
+            try {
+                const res = await fetch('/api/credentials/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        app_password: appPassword,
+                        saudia_password: saudiaPassword || 'TempPass123!'
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    // Clear drafts since it is now permanently saved
+                    sessionStorage.removeItem('draft_signup_email');
+                    sessionStorage.removeItem('draft_signup_app_pass');
+                    sessionStorage.removeItem('draft_signup_saudia_pass');
+
+                    feedback.className = 'test-feedback success';
+                    feedback.innerHTML = `🎉 <strong>Saved & Applied!</strong> All upcoming Saudia signups will now use <strong>${email}</strong>.`;
+                    feedback.style.display = 'block';
+                    await loadEmailSettings(true);
+                } else {
+                    feedback.className = 'test-feedback error';
+                    feedback.innerText = `❌ ${data.message}`;
+                    feedback.style.display = 'block';
+                }
+            } catch (err) {
+                feedback.className = 'test-feedback error';
+                feedback.innerText = `❌ Error saving credentials.`;
+                feedback.style.display = 'block';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = '💾 Save & Apply Email';
+            }
+        }
+
+        async function resetDefaultEmailSettings() {
+            if (!confirm('Are you sure you want to reset Saudia signup email back to KTaha default (ktaha8967@gmail.com)?')) return;
+            const feedback = document.getElementById('emailSettingsFeedback');
+            try {
+                const res = await fetch('/api/credentials/reset', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    // Clear drafts and input values
+                    sessionStorage.removeItem('draft_signup_email');
+                    sessionStorage.removeItem('draft_signup_app_pass');
+                    sessionStorage.removeItem('draft_signup_saudia_pass');
+                    
+                    const emailInput = document.getElementById('signupEmailInput');
+                    const passInput = document.getElementById('signupAppPassInput');
+                    if (emailInput) emailInput.value = '';
+                    if (passInput) passInput.value = '';
+
+                    feedback.className = 'test-feedback success';
+                    feedback.innerHTML = `🔄 <strong>Reset successfully!</strong> Saudia signups are now using KTaha default (ktaha8967@gmail.com). Input fields cleared.`;
+                    feedback.style.display = 'block';
+                    await loadEmailSettings(true);
+                } else {
+                    feedback.className = 'test-feedback error';
+                    feedback.innerText = `❌ ${data.message}`;
+                    feedback.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Error resetting email credentials:', err);
+            }
+        }
+
+        // Live draft listeners: Ensure what user types is NEVER lost when switching tabs
+        document.addEventListener('input', (e) => {
+            if (e.target.id === 'signupEmailInput') {
+                sessionStorage.setItem('draft_signup_email', e.target.value);
+            } else if (e.target.id === 'signupAppPassInput') {
+                sessionStorage.setItem('draft_signup_app_pass', e.target.value);
+            } else if (e.target.id === 'signupSaudiaPassInput') {
+                sessionStorage.setItem('draft_signup_saudia_pass', e.target.value);
+            }
+        });
+
+        // ==================== USER PROFILE INFO ====================
+        async function loadCurrentUser() {
+            try {
+                const res = await fetch('/api/auth/current');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const data = await res.json();
+                if (data.status === 'success' && data.user) {
+                    currentActiveUser = data.user.username;
+                    const sidebarUser = document.getElementById('sidebarUser');
+                    const sidebarEmail = document.getElementById('sidebarEmail');
+
+                    if (sidebarUser) sidebarUser.innerText = `@${data.user.username}`;
+                    if (sidebarEmail) sidebarEmail.innerText = data.user.email || 'No email configured';
+                }
+            } catch (e) {
+                console.error('Failed to load current user:', e);
+            }
+        }
+
+        // ==================== DASHBOARD & REALTIME LOGS ====================
         function updateUI(status) {
             statusDot.className = 'status-dot';
+            const stopBtn = document.getElementById('stopBtn');
             if (status.status === 'Running') {
                 statusDot.classList.add('running');
                 startBtn.disabled = true;
@@ -793,6 +1469,23 @@
                 claimBtn.disabled = true;
                 startBtn.innerText = 'Automation Flow Running...';
                 activeProfileCard.style.display = 'flex';
+                if (stopBtn) {
+                    stopBtn.style.display = 'inline-flex';
+                    stopBtn.disabled = false;
+                    stopBtn.innerText = '🛑 Stop Automation';
+                }
+            } else if (status.status === 'Stopping') {
+                statusDot.classList.add('running');
+                startBtn.disabled = true;
+                flightBtn.disabled = true;
+                signupBtn.disabled = true;
+                claimBtn.disabled = true;
+                startBtn.innerText = 'Stopping Process...';
+                if (stopBtn) {
+                    stopBtn.style.display = 'inline-flex';
+                    stopBtn.disabled = true;
+                    stopBtn.innerText = '⏳ Stopping...';
+                }
             } else {
                 statusDot.classList.add('active');
                 startBtn.disabled = false;
@@ -801,6 +1494,9 @@
                 claimBtn.disabled = false;
                 startBtn.innerText = 'Run All (End-to-End)';
                 activeProfileCard.style.display = 'none';
+                if (stopBtn) {
+                    stopBtn.style.display = 'none';
+                }
             }
 
             statusText.innerText = status.status;
@@ -830,8 +1526,12 @@
         async function fetchRecords() {
             try {
                 const res = await fetch('/api/records');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
                 const data = await res.json();
-                if (data.length === 0) return;
+                if (!data || data.length === 0) return;
                 
                 // 1. Total Queue Table
                 recordsBody.innerHTML = data.map(r => {
@@ -857,49 +1557,45 @@
                 }).join('');
 
                 // 2. With Membership ID Table
-                const withIdList = data.filter(r => r["Saudia Membership ID"] && r["Saudia Membership ID"].trim() !== "");
+                const withIdList = data.filter(r => r["Saudia Membership ID"] && String(r["Saudia Membership ID"]).trim() !== "");
                 if (withIdList.length > 0) {
                     withIdBody.innerHTML = withIdList.map(r => {
                         const pnr = r.PNR || r.booking || "";
-                        const lastName = r["Last Name"] || r.lastname || "";
+                        const name = r["Last Name"] || "";
                         const saudiaId = r["Saudia Membership ID"] || "";
                         const email = r["Gmail/Email ID"] || "";
-                        const pass = r["Password"] || "";
-                        const statusStr = r["Status"] || "Activated";
                         
                         return `
                             <tr>
                                 <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${pnr}</td>
-                                <td>${lastName}</td>
-                                <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #34d399;">${saudiaId}</td>
+                                <td>${name}</td>
+                                <td style="font-family: 'JetBrains Mono', monospace; color: #34d399; font-weight: 600;">${saudiaId}</td>
                                 <td>${email}</td>
-                                <td style="font-family: 'JetBrains Mono', monospace; color: #fbbf24;">${pass}</td>
-                                <td><span class="badge success">${statusStr}</span></td>
+                                <td><span class="badge success">Active</span></td>
                             </tr>
                         `;
                     }).join('');
                 } else {
-                    withIdBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">No registered passengers found.</td></tr>`;
+                    withIdBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 40px;">No registered IDs found yet.</td></tr>`;
                 }
 
-                // 3. Without Membership ID Table
-                const withoutIdList = data.filter(r => !r["Saudia Membership ID"] || r["Saudia Membership ID"].trim() === "");
+                // 3. Without ID / Pending Table
+                const withoutIdList = data.filter(r => !r["Saudia Membership ID"] || String(r["Saudia Membership ID"]).trim() === "");
                 if (withoutIdList.length > 0) {
                     withoutIdBody.innerHTML = withoutIdList.map(r => {
                         const pnr = r.PNR || r.booking || "";
-                        const lastName = r["Last Name"] || r.lastname || "";
-                        const remarks = r["Remarks"] || "Pending registration";
+                        const name = r["Last Name"] || "";
+                        const email = r["Gmail/Email ID"] || "—";
+                        const remarks = r["Remarks"] || "Awaiting processing";
                         const statusStr = r["Status"] || "Pending";
-                        const flight = remarks.includes("Tel Aviv") || remarks.includes("Flight") || remarks.includes("Sydney") ? remarks : (statusStr !== "Pending" && statusStr !== "Etihad Login Failed" ? "Tel Aviv to Sydney" : "—");
-                        
                         let badgeClass = "warning";
-                        if (statusStr.toLowerCase().includes("failed")) badgeClass = "danger";
+                        if (statusStr.includes("Failed")) badgeClass = "danger";
 
                         return `
                             <tr>
                                 <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600;">${pnr}</td>
-                                <td>${lastName}</td>
-                                <td style="color: #60a5fa; font-family: 'JetBrains Mono', monospace;">${flight}</td>
+                                <td>${name}</td>
+                                <td>${email}</td>
                                 <td style="color: var(--text-muted);">${remarks}</td>
                                 <td><span class="badge ${badgeClass}">${statusStr}</span></td>
                             </tr>
@@ -910,12 +1606,16 @@
                 }
 
                 // 4. Flight details table
-                const flightList = data.filter(r => r["Status"] && r["Status"] !== "Pending" && r["Status"] !== "Etihad Login Failed");
+                const flightList = data.filter(r => (r["Flight Details"] && String(r["Flight Details"]).trim() !== "" && String(r["Flight Details"]).trim() !== "nan") || (r["Status"] === "Flight Extracted"));
                 if (flightList.length > 0) {
                     flightsBody.innerHTML = flightList.map(r => {
                         const pnr = r.PNR || r.booking || "";
                         const name = r["Last Name"] || "";
-                        const flight = r["Remarks"] && r["Remarks"].includes("Tel Aviv") ? r["Remarks"] : "Tel Aviv to Sydney (Extracted)";
+                        const flight = (r["Flight Details"] && String(r["Flight Details"]).trim() !== "" && String(r["Flight Details"]).trim() !== "nan")
+                            ? r["Flight Details"]
+                            : (r["Remarks"] && String(r["Remarks"]).trim() !== "" && String(r["Remarks"]).trim() !== "nan")
+                                ? r["Remarks"]
+                                : "—";
                         
                         return `
                             <tr>
@@ -937,6 +1637,10 @@
         async function fetchStatus() {
             try {
                 const res = await fetch('/api/status');
+                if (res.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
                 const data = await res.json();
                 updateUI(data);
             } catch (err) {
@@ -947,7 +1651,9 @@
         async function fetchLogs() {
             try {
                 const res = await fetch('/api/logs');
+                if (res.status === 401) return;
                 const data = await res.json();
+                if (!data.logs) return;
                 const logLines = data.logs.split('\n');
                 
                 terminal.innerHTML = logLines.map(line => {
@@ -1000,6 +1706,64 @@
             }
         }
 
+        async function stopFlow() {
+            if (!confirm('Are you sure you want to stop the running automation?')) return;
+            const stopBtn = document.getElementById('stopBtn');
+            if (stopBtn) {
+                stopBtn.disabled = true;
+                stopBtn.innerText = '⏳ Stopping...';
+            }
+            try {
+                const res = await fetch('/api/stop', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    fetchStatus();
+                    fetchLogs();
+                } else {
+                    alert(data.message);
+                    if (stopBtn) {
+                        stopBtn.disabled = false;
+                        stopBtn.innerText = '🛑 Stop Automation';
+                    }
+                }
+            } catch (err) {
+                console.error('Error stopping flow:', err);
+                if (stopBtn) {
+                    stopBtn.disabled = false;
+                    stopBtn.innerText = '🛑 Stop Automation';
+                }
+            }
+        }
+
+        async function resetQueue() {
+            if (!confirm('Are you sure you want to reset all passenger records in the queue to Pending for a fresh run?')) return;
+            const resetBtn = document.getElementById('resetQueueBtn');
+            if (resetBtn) {
+                resetBtn.disabled = true;
+                resetBtn.innerText = '⏳ Resetting Queue...';
+            }
+            try {
+                const res = await fetch('/api/records/reset', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    await fetchRecords();
+                    await fetchStatus();
+                    await fetchLogs();
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                console.error('Error resetting queue:', err);
+                alert('Failed to reset queue: ' + err);
+            } finally {
+                if (resetBtn) {
+                    resetBtn.disabled = false;
+                    resetBtn.innerText = '🔄 Reset Queue (Clear IDs & Reprocess)';
+                }
+            }
+        }
+
         startBtn.addEventListener('click', () => startFlow('all'));
         flightBtn.addEventListener('click', () => startFlow('flight_only'));
         signupBtn.addEventListener('click', () => startFlow('signup_only'));
@@ -1037,13 +1801,16 @@
             }
         });
 
-        setInterval(fetchStatus, 2000);
-        setInterval(fetchLogs, 2000);
-        setInterval(fetchRecords, 4000);
-
+        // Initialize Everything
+        loadCurrentUser();
+        loadEmailSettings();
         fetchStatus();
         fetchLogs();
         fetchRecords();
+
+        setInterval(fetchStatus, 2000);
+        setInterval(fetchLogs, 2000);
+        setInterval(fetchRecords, 4000);
     </script>
 </body>
 </html>

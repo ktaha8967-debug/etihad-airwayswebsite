@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Airline Automation Suite | Etihad & Saudia AlFursan</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-app: #080c16;
+            --bg-card: rgba(18, 25, 41, 0.65);
+            --bg-surface: #0e1424;
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.25);
+            --success: #10b981;
+            --success-glow: rgba(16, 185, 129, 0.2);
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f9fafb;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(59, 130, 246, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 60%);
+        }
+
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 64px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8, 12, 22, 0.7);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 16px var(--primary-glow);
+        }
+
+        .brand-logo h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #93c5fd, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-logo span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+            margin-top: -2px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 16px var(--success-glow);
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 64px 60px;
+            max-width: 1280px;
+            margin: 0 auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #93c5fd;
+            margin-bottom: 24px;
+        }
+
+        .hero h2 {
+            font-size: 54px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            max-width: 900px;
+            margin-bottom: 24px;
+        }
+
+        .hero h2 span.gradient {
+            background: linear-gradient(135deg, #60a5fa 20%, #34d399 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p.lead {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            max-width: 760px;
+            margin-bottom: 36px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        /* Platform Stats Banner */
+        .stats-bar {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px 36px;
+            backdrop-filter: blur(20px);
+            margin-bottom: 80px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: var(--border);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #93c5fd, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Features Section */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 48px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px 28px;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-active);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Architecture Section */
+        .arch-box {
+            background: linear-gradient(180deg, rgba(14, 20, 36, 0.8), rgba(8, 12, 22, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .arch-diagram {
+            background: #050811;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .arch-node {
+            background: rgba(18, 25, 41, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .arch-arrow {
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 64px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            background: rgba(8, 12, 22, 0.95);
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-backdrop.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #0f1424;
+            border: 1px solid var(--border-active);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 480px;
+            padding: 36px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            gap: 20px;
+        }
+
+        .modal-tab {
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-label small {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: normal;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(15, 20, 36, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 16px var(--primary-glow);
+            background: rgba(15, 20, 36, 1);
+        }
+
+        .form-error {
+            display: none;
+            color: #f87171;
+            font-size: 13px;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <nav class="navbar">
+        <a href="/" class="brand-logo">
+            <div class="logo-icon">✈️</div>
+            <div>
+                <h1>Airline Suite</h1>
+                <span>COMMAND CENTER V2.0</span>
+            </div>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pipeline">4-Stage Pipeline</a></li>
+            <li><a href="#architecture">Database Isolation</a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button class="btn btn-outline" onclick="openAuthModal('login')">Sign In</button>
+            <button class="btn btn-primary" onclick="openAuthModal('register')">Get Started Free</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>✦</span> Multi-Tenant Airline Orchestration V2.0
+        </div>
+        <h2>
+            Automate Etihad to Saudia AlFursan <br>
+            <span class="gradient">With Surgical Precision</span>
+        </h2>
+        <p class="lead">
+            Scrape passenger itineraries directly from Etihad Airways, register AlFursan memberships on Saudia Airlines, automatically handle IMAP activation codes, and retro-claim missing flight miles—with <strong>100% strictly isolated databases</strong> for every operator.
+        </p>
+
+        <div class="hero-cta">
+            <button class="btn btn-primary" style="padding: 14px 32px; font-size: 15px;" onclick="openAuthModal('register')">
+                🚀 Launch Personal Workspace
+            </button>
+            <button class="btn btn-outline" style="padding: 14px 28px; font-size: 15px;" onclick="openAuthModal('login')">
+                🔑 Sign In to Workspace
+            </button>
+        </div>
+
+        <!-- Live Metrics Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Database Isolation</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">4 Modes</div>
+                <div class="stat-label">Modular Automation</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2-Way</div>
+                <div class="stat-label">Gmail IMAP Verification</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">Zero</div>
+                <div class="stat-label">Shared Credential Leaks</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+        <div class="section-header">
+            <h2 class="section-title">Engineered for High-Scale Airline Operations</h2>
+            <p class="section-subtitle">A multi-user enterprise platform designed to process thousands of PNRs without collisions or manual intervention.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Dedicated SQLite Database</h3>
+                <p>Each user gets an isolated SQLite database (<code>username.db</code>). Strict tenant isolation guarantees that no user can access or view another user's passengers, Excel files, or execution state.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔑</div>
+                <h3>Personal IMAP Engine</h3>
+                <p>Every agent configures their personal Gmail and 16-character App Password. Verification codes and activation links are retrieved directly from their private mailbox.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛑</div>
+                <h3>Instant Stop & Resume</h3>
+                <p>Real-time emergency halt! Click <strong>🛑 Stop Automation</strong> at any time to immediately interrupt active browser tasks and polling loops while preserving current progress.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✈️</div>
+                <h3>Etihad Itinerary Scraper</h3>
+                <p>Extract flight numbers, schedules, and complete passenger itineraries directly from Etihad Manage Booking using PNR and passenger surname.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">👑</div>
+                <h3>Saudia AlFursan Signups</h3>
+                <p>Automated multi-step registration on Saudia Airlines portal with anti-bot stealth bypass and official 100-prefix loyalty ID generation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Glassmorphism Command Center</h3>
+                <p>Real-time terminal output, live progress bars, categorized tables (Total Queue, With ID, Pending), and dual-format Excel/CSV exports.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="section">
+        <div class="arch-box">
+            <div>
+                <span style="font-size: 12px; font-weight: 700; color: var(--primary); text-transform: uppercase;">Zero-Trust Data Isolation</span>
+                <h2 style="font-size: 32px; font-weight: 800; margin: 12px 0 16px;">Dedicated Database Per User</h2>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.7; margin-bottom: 20px;">
+                    Traditional shared dashboards risk data overlap and collision. This enterprise version features <strong>Strict Zero-Trust Tenant Isolation</strong>:
+                </p>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
+                    <li style="display: flex; gap: 10px; align-items: center;">
+                        <span style="color: var(--success); font-weight: 800;">✓</span>
+                        <span>Dedicated SQLite database file per user (<code>databases/{user}.db</code>)</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: center;">
+                        <span style="color: var(--success); font-weight: 800;">✓</span>
+                        <span>Pre-configured high-speed automated Gmail IMAP integration (zero setup required)</span>
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: center;">
+                        <span style="color: var(--success); font-weight: 800;">✓</span>
+                        <span>Independent passenger sheets, execution logs, and downloadable reports</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="arch-diagram">
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">// Multi-Tenant Isolation Flow</div>
+                <div class="arch-node">
+                    <span>👤 User "Taha"</span>
+                    <span style="color: #34d399;">Active</span>
+                </div>
+                <div class="arch-arrow">↓ writes to</div>
+                <div class="arch-node" style="border-color: rgba(52, 211, 153, 0.4);">
+                    <span>🗄️ data/databases/taha.db</span>
+                    <span style="color: #60a5fa;">Isolated</span>
+                </div>
+                <div style="margin: 8px 0; border-top: 1px dashed rgba(255,255,255,0.1);"></div>
+                <div class="arch-node">
+                    <span>👤 User "Ali"</span>
+                    <span style="color: #34d399;">Active</span>
+                </div>
+                <div class="arch-arrow">↓ writes to</div>
+                <div class="arch-node" style="border-color: rgba(96, 165, 250, 0.4);">
+                    <span>🗄️ data/databases/ali.db</span>
+                    <span style="color: #60a5fa;">Isolated</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2026 Enterprise Airline Automation Suite. All Rights Reserved. Multi-Tenant Architecture Powered by Python & SQLite.</p>
+    </footer>
+
+    <!-- ==================== AUTH MODAL (LOGIN & REGISTER) ==================== -->
+    <div id="authModal" class="modal-backdrop">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            <div class="modal-tabs">
+                <div id="tabLogin" class="modal-tab active" onclick="switchAuthTab('login')">Sign In</div>
+                <div id="tabRegister" class="modal-tab" onclick="switchAuthTab('register')">Register Personal DB</div>
+            </div>
+
+            <div id="formError" class="form-error"></div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="loginUsername" class="form-input" placeholder="Enter your username" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+                <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                    Sign In to Personal Workspace
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" onsubmit="handleRegister(event)" style="display: none; flex-direction: column; gap: 14px;">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="regName" class="form-input" placeholder="e.g. Muhammad Taha" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>Desired Username</span>
+                        <small>lowercase, letters/digits only</small>
+                    </label>
+                    <input type="text" id="regUsername" class="form-input" placeholder="e.g. taha_agent" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="regPassword" class="form-input" placeholder="••••••••" required autocomplete="new-password">
+                </div>
+                <button type="submit" id="regSubmitBtn" class="btn btn-success" style="width: 100%; margin-top: 8px;">
+                    Create Isolated Database & Workspace
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.add('show');
+            document.getElementById('formError').style.display = 'none';
+            switchAuthTab(mode || 'login');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('show');
+        }
+
+        function switchAuthTab(mode) {
+            const tabLogin = document.getElementById('tabLogin');
+            const tabReg = document.getElementById('tabRegister');
+            const formLogin = document.getElementById('loginForm');
+            const formReg = document.getElementById('registerForm');
+            const err = document.getElementById('formError');
+            err.style.display = 'none';
+
+            if (mode === 'login') {
+                tabLogin.classList.add('active');
+                tabReg.classList.remove('active');
+                formLogin.style.display = 'flex';
+                formReg.style.display = 'none';
+            } else {
+                tabReg.classList.add('active');
+                tabLogin.classList.remove('active');
+                formReg.style.display = 'flex';
+                formLogin.style.display = 'none';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginSubmitBtn');
+            const err = document.getElementById('formError');
+            btn.disabled = true;
+            btn.innerText = 'Signing in...';
+            err.style.display = 'none';
+
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    window.location.href = '/dashboard';
+                } else {
+                    err.style.display = 'block';
+                    err.innerText = data.message || 'Invalid username or password.';
+                }
+            } catch (error) {
+                err.style.display = 'block';
+                err.innerText = 'Server connection error. Please try again.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Sign In to Personal Workspace';
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const btn = document.getElementById('regSubmitBtn');
+            const err = document.getElementById('formError');
+            btn.disabled = true;
+            btn.innerText = 'Creating Personal Database...';
+            err.style.display = 'none';
+
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, username, password })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    window.location.href = '/dashboard';
+                } else {
+                    err.style.display = 'block';
+                    err.innerText = data.message || 'Registration failed.';
+                }
+            } catch (error) {
+                err.style.display = 'block';
+                err.innerText = 'Server connection error. Please try again.';
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Create Isolated Database & Workspace';
+            }
+        }
+    </script>
+</body>
+</html>
