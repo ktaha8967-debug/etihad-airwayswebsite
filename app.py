@@ -704,9 +704,14 @@ def project2_config_api():
 @app.route("/api/project2/test_credentials", methods=["POST"])
 @login_required
 def project2_test_credentials_api():
-    data = request.json or {}
+    uname = get_current_user()
+    data = request.get_json(silent=True) or {}
     email = (data.get("master_email") or "").strip().lower()
     app_pwd = (data.get("master_password") or "").replace(" ", "").replace("-", "").strip()
+    if not email or not app_pwd:
+        cfg = get_project2_config(uname)
+        email = (cfg.get("master_email") or "").strip().lower()
+        app_pwd = (cfg.get("master_password") or "").replace(" ", "").replace("-", "").strip()
     if not email or not app_pwd:
         return jsonify({"status": "error", "message": "Please enter both Gmail address and 16-character App Password."}), 400
     ok, msg = test_imap_connection(email, app_pwd)
