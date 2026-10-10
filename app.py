@@ -606,9 +606,11 @@ from src.project2_manager import (
 )
 from src.project2_automation import (
     run_project2_automation,
+    run_project2_pnr_update,
     request_project2_stop,
     is_project2_stopped
 )
+
 
 project2_threads = {}
 project2_threads_lock = threading.Lock()
@@ -662,6 +664,27 @@ def project2_start_api():
 
     logger.info(f"Project 2 automation thread started for user '{uname}' (Limit: {sample_limit}).")
     return jsonify({"status": "success", "message": f"Project 2 enrollment started (Limit: {sample_limit or 'Full Queue'})."})
+
+@app.route("/api/project2/update_pnr", methods=["POST"])
+@login_required
+def project2_update_pnr_api():
+    uname = get_current_user()
+    with project2_threads_lock:
+        t = project2_threads.get(uname)
+        if t is not None and t.is_alive():
+            return jsonify({"status": "error", "message": "An automation process is already running for your account."}), 400
+
+        thread = threading.Thread(
+            target=run_project2_pnr_update,
+            args=(uname,),
+            daemon=True
+        )
+        project2_threads[uname] = thread
+        thread.start()
+
+    logger.info(f"Saudia PNR contact update thread started for user '{uname}'.")
+    return jsonify({"status": "success", "message": "Saudia PNR contact update started."})
+
 
 @app.route("/api/project2/stop", methods=["POST"])
 @login_required

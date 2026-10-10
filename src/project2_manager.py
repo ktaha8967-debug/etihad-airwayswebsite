@@ -19,6 +19,7 @@ def init_project2_db(username: str):
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS project2_passengers (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    pnr TEXT DEFAULT '',
                     first_name TEXT DEFAULT '',
                     last_name TEXT DEFAULT '',
                     title TEXT DEFAULT 'Mr',
@@ -35,6 +36,13 @@ def init_project2_db(username: str):
                     updated_at TEXT
                 );
             """)
+
+            # Ensure pnr column exists in older database tables
+            try:
+                conn.execute("ALTER TABLE project2_passengers ADD COLUMN pnr TEXT DEFAULT '';")
+            except Exception:
+                pass
+
 
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS project2_status (
@@ -174,6 +182,7 @@ def import_project2_passengers_from_df(username: str, df: pd.DataFrame):
 
     df.columns = [str(c).strip() for c in df.columns]
 
+    pnr_col = next((c for c in df.columns if any(k in c.lower() for k in ["pnr", "booking reference", "booking ref", "record locator", "reference"])), None)
     fname_col = next((c for c in df.columns if any(k in c.lower() for k in ["first name", "firstname", "first_name", "given name", "first"])), None)
     lname_col = next((c for c in df.columns if any(k in c.lower() for k in ["last name", "lastname", "last_name", "surname", "last"])), None)
     if not fname_col:
@@ -189,6 +198,9 @@ def import_project2_passengers_from_df(username: str, df: pd.DataFrame):
         with conn:
             conn.execute("DELETE FROM project2_passengers;")
             for _, row in df.iterrows():
+                pnr = str(row[pnr_col]).strip() if pnr_col and pd.notna(row[pnr_col]) else ""
+                if pnr.lower() in ["nan", "none"]: pnr = ""
+
                 if fname_col and lname_col and fname_col != lname_col:
                     fname = str(row[fname_col]).strip() if pd.notna(row[fname_col]) else ""
                     lname = str(row[lname_col]).strip() if pd.notna(row[lname_col]) else ""
@@ -243,9 +255,9 @@ def import_project2_passengers_from_df(username: str, df: pd.DataFrame):
 
                 conn.execute("""
                     INSERT INTO project2_passengers
-                    (first_name, last_name, title, dob, passport, mobile, email, saudia_id, status, remarks, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ready for processing', ?, ?);
-                """, (fname, lname, title, dob, doc, phone, email, saudia_id, status, now, now))
+                    (pnr, first_name, last_name, title, dob, passport, mobile, email, saudia_id, status, remarks, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ready for processing', ?, ?);
+                """, (pnr, fname, lname, title, dob, doc, phone, email, saudia_id, status, now, now))
     finally:
         conn.close()
 
@@ -271,6 +283,7 @@ def get_project2_passengers_df(username: str) -> pd.DataFrame:
         df = pd.read_sql_query("""
             SELECT 
                 id AS "ID",
+                pnr AS "PNR",
                 first_name AS "First Name",
                 last_name AS "Last Name",
                 title AS "Title",

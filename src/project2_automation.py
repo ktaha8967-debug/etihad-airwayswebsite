@@ -354,3 +354,103 @@ def run_project2_automation(username: str, sample_limit: int = None):
         logging.getLogger("src.saudia_signup").removeHandler(file_handler)
         logging.getLogger("src.temp_mail").removeHandler(file_handler)
         file_handler.close()
+
+
+def run_project2_pnr_update(username: str):
+    """
+    Executes dedicated Saudia Manage Booking automation to attach contact emails to all PNRs in queue.
+    """
+    clear_project2_stop(username)
+    log_dir = "data/logs"
+    os.makedirs(log_dir, exist_ok=True)
+    p2_log_path = os.path.join(log_dir, f"project2_{username}.log")
+
+    file_handler = logging.FileHandler(p2_log_path, encoding="utf-8")
+    file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.INFO)
+    logging.getLogger("SaudiaManageBooking").addHandler(file_handler)
+    logging.getLogger("SaudiaManageBooking").setLevel(logging.INFO)
+
+    logger.info(f"=== Starting Saudia PNR Contact Automation for user '{username}' ===")
+
+    config = get_project2_config(username)
+    passengers = get_project2_passengers_list(username)
+
+    # Filter passengers who have a PNR
+    pnr_passengers = [p for p in passengers if p.get("pnr") and str(p.get("pnr")).strip()]
+    if not pnr_passengers:
+        logger.warning("No passengers with a PNR found in Project 2 queue.")
+        update_project2_status(username, "Failed", 0, 0, 0, 0, 0, "No PNRs found in queue")
+        logger.removeHandler(file_handler)
+        logging.getLogger("SaudiaManageBooking").removeHandler(file_handler)
+        file_handler.close()
+        return
+
+    total_count = len(pnr_passengers)
+    processed_count = 0
+    success_count = 0
+    failed_count = 0
+
+    update_project2_status(username, "Running", 0, total_count, 0, 0, 0, "Initializing Saudia Manage Booking")
+
+    from src.saudia_manage_booking import SaudiaManageBooking
+    manage = SaudiaManageBooking()
+
+    try:
+        manage.start()
+
+        for idx, pax in enumerate(pnr_passengers):
+            if is_project2_stopped(username):
+                logger.info("🛑 PNR update stop requested. Halting loop.")
+                break
+
+            if idx > 0:
+                manage.reset_page()
+
+            pax_id = pax["id"]
+            pnr = str(pax.get("pnr", "")).strip().upper()
+            lname = str(pax.get("last_name", "")).strip() or "Passenger"
+            fname = str(pax.get("first_name", "")).strip()
+            target_email = str(pax.get("email", "")).strip() or (config.get("master_email") or "").strip()
+
+            pax_desc = f"{fname} {lname} [PNR: {pnr}]"
+            logger.info(f"--- [PNR Contact Update {idx + 1}/{total_count}] Processing: {pax_desc} ---")
+            update_project2_status(username, "Running", processed_count, total_count, success_count, failed_count, 0, pax_desc)
+
+            res = manage.update_booking_contact(pnr=pnr, last_name=lname, email=target_email)
+
+            if res.get("success"):
+                logger.info(f"✅ PNR {pnr} updated successfully for {lname}!")
+                update_project2_passenger_record(username, pax_id, {
+                    "remarks": res.get("remarks", "PNR Contact Updated")
+                })
+                success_count += 1
+            else:
+                remarks_msg = res.get("remarks", "PNR update failed")
+                logger.warning(f"⚠️ PNR {pnr} note: {remarks_msg}")
+                update_project2_passenger_record(username, pax_id, {
+                    "remarks": remarks_msg
+                })
+                failed_count += 1
+
+            processed_count += 1
+            update_project2_status(username, "Running", processed_count, total_count, success_count, failed_count, 0, pax_desc)
+            time.sleep(2)
+
+        final_status = "Stopped" if is_project2_stopped(username) else "Completed"
+        update_project2_status(username, final_status, processed_count, total_count, success_count, failed_count, 0, "")
+        logger.info(f"=== Saudia PNR Contact Automation Finished ({final_status}) -> Processed: {processed_count}, Success: {success_count}, Failed: {failed_count} ===")
+
+    except Exception as e:
+        logger.error(f"Critical error during Saudia PNR update: {e}", exc_info=True)
+        update_project2_status(username, "Failed", processed_count, total_count, success_count, failed_count, 0, str(e))
+    finally:
+        try:
+            manage.stop()
+        except Exception:
+            pass
+        logger.removeHandler(file_handler)
+        logging.getLogger("SaudiaManageBooking").removeHandler(file_handler)
+        file_handler.close()
+
